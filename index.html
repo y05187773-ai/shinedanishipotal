@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新荏田西ポータル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header>
+    <div class="header-brand">
+      <div class="logo-icon">🏫</div>
+      <span class="site-name">新荏田西ポータル</span>
+    </div>
+    <div class="header-right">
+      <div class="header-spacer"></div>
+      <div class="header-search">
+        <input type="search" id="searchInput" placeholder="リンクを検索..." autocomplete="off">
+        <span class="search-icon">🔍</span>
+      </div>
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Drawer (mobile) ===== -->
+  <div class="drawer-overlay" id="overlay"></div>
+  <nav class="drawer" id="drawer">
+    <div class="drawer-header">
+      <span class="drawer-title">新荏田西ポータル</span>
+      <button class="drawer-close" id="drawerClose" aria-label="閉じる">✕</button>
+    </div>
+    <nav>
+      <!-- ===== Drawer Nav START ===== -->
+      <div class="sidebar-label" style="padding:16px 18px 6px;">カテゴリ</div>
+      <a class="sidebar-link" href="#gakusyu"><span class="nav-icon">📚</span>学習管理</a>
+      <a class="sidebar-link" href="#jidou"><span class="nav-icon">👦</span>児童管理</a>
+      <a class="sidebar-link" href="#digital"><span class="nav-icon">💻</span>デジタル教科書</a>
+      <a class="sidebar-link" href="#校務管理"><span class="nav-icon">📁</span>校務管理</a>
+      <a class="sidebar-link" href="#生成ai"><span class="nav-icon">⭐</span>生成AI</a>
+      <a class="sidebar-link" href="#研修管理"><span class="nav-icon">🗂️</span>研修管理</a>
+      <a class="sidebar-link" href="#授業準備教材作成"><span class="nav-icon">📌</span>授業準備・教材作成</a>
+      <a class="sidebar-link" href="#便利ツール"><span class="nav-icon">🏷️</span>便利ツール</a>
+      <!-- ===== Drawer Nav END ===== -->
+    </nav>
+  </nav>
+
+  <!-- ===== Layout ===== -->
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <!-- ===== Sidebar Nav START ===== -->
+      <div class="sidebar-label">カテゴリ</div>
+      <a class="sidebar-link active" href="#gakusyu"><span class="nav-icon">📚</span>学習管理</a>
+      <a class="sidebar-link" href="#jidou"><span class="nav-icon">👦</span>児童管理</a>
+      <a class="sidebar-link" href="#digital"><span class="nav-icon">💻</span>デジタル教科書</a>
+      <a class="sidebar-link" href="#校務管理"><span class="nav-icon">📁</span>校務管理</a>
+      <a class="sidebar-link" href="#生成ai"><span class="nav-icon">⭐</span>生成AI</a>
+      <a class="sidebar-link" href="#研修管理"><span class="nav-icon">🗂️</span>研修管理</a>
+      <a class="sidebar-link" href="#授業準備教材作成"><span class="nav-icon">📌</span>授業準備・教材作成</a>
+      <a class="sidebar-link" href="#便利ツール"><span class="nav-icon">🏷️</span>便利ツール</a>
+      <!-- ===== Sidebar Nav END ===== -->
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- ===== 学習管理 ===== -->
+      <section class="section" id="gakusyu">
+        <div class="section-header">
+          <div class="section-icon icon-blue">📚</div>
+          <div class="section-info">
+            <div class="section-title">学習管理</div>
+            <div class="section-desc">授業・学習支援に使うツール</div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://loilonote.app/login?hl=ja-JP" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row2.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">ロイロノート</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://classroom.google.com/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row3.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Google Classroom</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://yokohama-edu.l-gate.net/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row4.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">L-gate</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://monoxer.com/login" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row5.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Monoxer管理画面</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.canva.com/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row6.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Canva</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== 児童管理 ===== -->
+      <section class="section" id="jidou">
+        <div class="section-header">
+          <div class="section-icon icon-green">👦</div>
+          <div class="section-info">
+            <div class="section-title">児童管理</div>
+            <div class="section-desc">出席・成績・情報管理ツール</div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://eschool.office.ycan/loginNow.do" target="_blank" rel="noopener">
+            <div class="card-thumb">👦</div>
+            <div class="card-body">
+              <div class="card-title">校務システム</div>
+              <div class="card-desc">学校基本情報管理システム</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://sughool.jp/ctrl/yokohama-sch/c" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row8.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">すぐーる</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://study-navi.edu.city.yokohama.jp/teachers/home" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row9.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">横浜St☆dyNavi</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== デジタル教科書 ===== -->
+      <section class="section" id="digital">
+        <div class="section-header">
+          <div class="section-icon icon-purple">💻</div>
+          <div class="section-info">
+            <div class="section-title">デジタル教科書</div>
+            <div class="section-desc">電子教材・デジタル教科書ポータル</div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://manaviewer.jp/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row10.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">まなビューア</div>
+              <div class="card-desc">国語・外国語・生活</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.lentrance.com/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row11.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Lentrance</div>
+              <div class="card-desc">算数・理科・保健</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://mirai-pf.jp/user/login.html" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row12.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">みらいスクールプラットフォーム</div>
+              <div class="card-desc">社会・家庭</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://d-support.kyoiku-shuppan.co.jp/dk/r6e/teacher.php" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row13.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">教育出版</div>
+              <div class="card-desc">道徳・音楽</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://docs.google.com/spreadsheets/d/11GfoSJRXT-MHWPGXYSvHym5WzGsMN9plL8rt4h9PTKM/edit" target="_blank" rel="noopener">
+            <div class="card-thumb">💻</div>
+            <div class="card-body">
+              <div class="card-title">デジタル教科書ID一覧表</div>
+              <div class="card-desc">各社のID・パスワードが見れます。</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== 校務管理 ===== -->
+      <section class="section" id="校務管理">
+        <div class="section-header">
+          <div class="section-icon icon-blue">📁</div>
+          <div class="section-info">
+            <div class="section-title">校務管理</div>
+            <div class="section-desc"></div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://y.milim.jp/yokohama/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row15.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">ミライム</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://eschool.office.ycan/loginNow.do" target="_blank" rel="noopener">
+            <div class="card-thumb">📁</div>
+            <div class="card-body">
+              <div class="card-title">校務システム</div>
+              <div class="card-desc">学校基本情報管理システム</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://ycan.city.yokohama.lg.jp/index.html" target="_blank" rel="noopener">
+            <div class="card-thumb">📁</div>
+            <div class="card-body">
+              <div class="card-title">YCAN（外部）</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="http://ky-benricho.office.ycan/yc/menu.php" target="_blank" rel="noopener">
+            <div class="card-thumb">📁</div>
+            <div class="card-body">
+              <div class="card-title">学校便利帳</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://ky-shomu.office.ycan/SMART_SHOMU/start.do?screenSize=0" target="_blank" rel="noopener">
+            <div class="card-thumb">📁</div>
+            <div class="card-body">
+              <div class="card-title">庶務事務システム</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://ysam.office.ycan/ysam/" target="_blank" rel="noopener">
+            <div class="card-thumb">📁</div>
+            <div class="card-body">
+              <div class="card-title">資産管理システム</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== 生成AI ===== -->
+      <section class="section" id="生成ai">
+        <div class="section-header">
+          <div class="section-icon icon-green">⭐</div>
+          <div class="section-info">
+            <div class="section-title">生成AI</div>
+            <div class="section-desc"></div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://gemini.google.com/app?hl=ja" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row21.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Gemini</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://notebooklm.google.com/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row22.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Notebook LM</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== 研修管理 ===== -->
+      <section class="section" id="研修管理">
+        <div class="section-header">
+          <div class="section-icon icon-purple">🗂️</div>
+          <div class="section-info">
+            <div class="section-title">研修管理</div>
+            <div class="section-desc"></div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="http://plant.nits.go.jp/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row23.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Plant</div>
+              <div class="card-desc">全国教員研修プラットフォーム</div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== 授業準備・教材作成 ===== -->
+      <section class="section" id="授業準備教材作成">
+        <div class="section-header">
+          <div class="section-icon icon-orange">📌</div>
+          <div class="section-info">
+            <div class="section-title">授業準備・教材作成</div>
+            <div class="section-desc"></div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://happylilac.net/mu-s/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row24.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">ちびむすドリル</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://print-kids.net/" target="_blank" rel="noopener">
+            <div class="card-thumb">📌</div>
+            <div class="card-body">
+              <div class="card-title">ぷりんときっず</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.irasutoya.com/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row26.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">かわいいフリー素材集 いらすとや</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.nhk.or.jp/school/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row27.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">NHK for School</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://kahoot.com/ja/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row28.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Kahoot!（カフート）</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://wayground.com/?lng=ja" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row29.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">Quizizz（クイジズ）</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.mext.go.jp/sports/b_menu/sports/mcatetop04/list/jsa_00003.htm#14" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row30.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">スポーツ庁　小学校体育指導の手引</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://textmining.userlocal.jp/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row31.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">AIテキストマイニング</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://script.google.com/a/macros/edu.city.yokohama.jp/s/AKfycbwGnzAij-HrqohuwKFdA7FEiEiY89JRYjCaCFY0ZRAFZLAhBnbLao9fKvNQna18ucdaQg/exec" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row32.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">器械運動動画集</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===== 便利ツール ===== -->
+      <section class="section" id="便利ツール">
+        <div class="section-header">
+          <div class="section-icon icon-gray">🏷️</div>
+          <div class="section-info">
+            <div class="section-title">便利ツール</div>
+            <div class="section-desc"></div>
+          </div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-grid">
+          <a class="card" href="https://www.ilovepdf.com/ja" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row33.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">I Love PDF</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.iloveimg.com/ja" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row34.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">I Love IMG</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://gigafile.nu/" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row35.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">GIGAファイル便</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+          <a class="card" href="https://www.wbgt.env.go.jp/sp/graph_ref_td.php?region=03&amp;prefecture=46&amp;point=46106" target="_blank" rel="noopener">
+            <div class="card-thumb"><img src="icons/row36.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
+            <div class="card-body">
+              <div class="card-title">環境省熱中症予防サイト</div>
+              <div class="card-desc"></div>
+            </div>
+            <span class="card-chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <span class="footer-name">荏田西小学校</span>
+    <span class="footer-meta">最終更新: 2025年○月○日</span>
+  </footer>
+
+  <!-- Scroll-to-top -->
+  <button class="back-top" id="backTop" aria-label="トップへ戻る">↑</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
