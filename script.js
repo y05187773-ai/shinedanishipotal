@@ -1,7 +1,42 @@
-/* ===== Stagger animation delay on cards ===== */
+/* ===== Stagger animation ===== */
 document.querySelectorAll('.card-grid').forEach(grid => {
   grid.querySelectorAll('.card').forEach((card, i) => {
-    card.style.animationDelay = `${0.28 + i * 0.07}s`;
+    card.style.animationDelay = `${i * 0.06}s`;
+  });
+});
+
+/* ===== Mouse spotlight on cards ===== */
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    card.style.setProperty('--my', `${e.clientY - r.top}px`);
+  });
+});
+
+/* ===== Blue sparkle on hover ===== */
+const SPARKLE_COLORS = ['#3b82f6','#60a5fa','#06b6d4','#818cf8','#38bdf8'];
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mouseenter', e => {
+    for (let i = 0; i < 5; i++) {
+      const sp = document.createElement('div');
+      sp.className = 'sparkle';
+      const angle  = Math.random() * Math.PI * 2;
+      const dist   = 30 + Math.random() * 40;
+      const dist2  = 50 + Math.random() * 60;
+      sp.style.cssText = `
+        left:${e.clientX + Math.cos(angle) * 4}px;
+        top:${e.clientY + Math.sin(angle) * 4}px;
+        background:${SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)]};
+        --dx:${Math.cos(angle) * dist}px;
+        --dy:${Math.sin(angle) * dist}px;
+        --dx2:${Math.cos(angle) * dist2}px;
+        --dy2:${Math.sin(angle) * dist2}px;
+        animation-delay:${i * 0.07}s;
+      `;
+      document.body.appendChild(sp);
+      setTimeout(() => sp.remove(), 900);
+    }
   });
 });
 
@@ -20,7 +55,7 @@ overlay     .addEventListener('click', closeDrawer);
 drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
 
 /* ===== Active sidebar link on scroll ===== */
-const sections    = document.querySelectorAll('.section');
+const sections     = document.querySelectorAll('.section');
 const sidebarLinks = document.querySelectorAll('#sidebar .sidebar-link');
 
 const sectionObserver = new IntersectionObserver(entries => {
