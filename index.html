@@ -1,882 +1,1175 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>新荏田西ポータル</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新荏田西ポータル</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;
+  font-family:"Hiragino Sans","Noto Sans JP",sans-serif}
+
+/* ==============================
+   PAGE ENGINE
+============================== */
+#app{position:fixed;inset:0;overflow:hidden}
+.page{
+  position:absolute;inset:0;overflow-y:auto;
+  visibility:hidden;opacity:0;
+  transform:scale(.97) translateY(16px);
+  transition:none;
+}
+.page.active{
+  visibility:visible;opacity:1;transform:none;
+  transition:opacity .5s ease, transform .55s cubic-bezier(.34,1.2,.64,1);
+}
+.page.exit{
+  visibility:visible;opacity:0;transform:scale(1.03) translateY(-12px);
+  transition:opacity .38s ease, transform .38s ease;
+  pointer-events:none;
+}
+
+/* ==============================
+   INTRO — LP style
+============================== */
+#intro{
+  display:flex;flex-direction:column;
+  background:#05091a;
+  position:relative;overflow:hidden;
+  overflow-y:auto;
+}
+
+/* Animated mesh background */
+.lp-mesh{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 90% 70% at 10% 10%, rgba(37,99,235,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 85% 20%, rgba(6,182,212,.18) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 80% at 50% 90%, rgba(139,92,246,.15) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 70% 55%, rgba(16,185,129,.1)  0%, transparent 45%);
+  animation:meshShift 18s ease-in-out infinite alternate;
+}
+@keyframes meshShift{
+  0%  {filter:blur(60px) brightness(1)}
+  50% {filter:blur(80px) brightness(1.1)}
+  100%{filter:blur(60px) brightness(1)}
+}
+
+/* Grid overlay */
+.lp-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(148,163,184,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* Nav */
+/* School info (next to clock) */
+/* School info (next to clock) */
+.lp-school-info{
+  display:flex;align-items:center;gap:20px;
+  padding-left:24px;
+  border-left:1px solid rgba(255,255,255,.1);
+  margin-left:auto;
+  text-align:right;
+}
+.lp-school-name{font-size:1.15rem;font-weight:800;color:#c8d6e8;letter-spacing:.02em;white-space:nowrap}
+.lp-school-meta{display:flex;gap:18px;flex-wrap:nowrap;font-size:.88rem;color:#6a7a9a;letter-spacing:.02em}
+.lp-school-meta span{white-space:nowrap}
+
+.lp-nav{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 32px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  animation:fadeDown .6s ease both;
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.lp-logo{display:flex;align-items:center;gap:10px}
+.lp-logo-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#3b82f6,#06b6d4);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 0 20px rgba(59,130,246,.45);
+}
+.lp-logo-text{font-size:.88rem;font-weight:800;color:#f0f4ff;letter-spacing:.01em}
+.lp-logo-sub{font-size:.65rem;color:#4a5a7a;font-weight:500}
+.lp-nav-right{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.lp-nav-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  font-size:.7rem;color:#8892b0;font-weight:600;
+}
+.lp-live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 8px rgba(34,197,94,.7);animation:livePulse 2s ease infinite}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.lp-nav-center{display:flex;flex-direction:row;align-items:center;gap:16px}
+.lp-clock{display:flex;align-items:baseline;gap:10px;white-space:nowrap;color:#f0f4ff;letter-spacing:.02em}
+.lp-clock-date{font-size:1.1rem;font-weight:700;letter-spacing:.02em;color:#8892b0}
+.lp-clock-time{font-size:1.4rem;font-weight:900;letter-spacing:.04em;line-height:1}
+.lp-countdown{font-size:.7rem;font-weight:700;white-space:nowrap;text-align:center;letter-spacing:.03em}
+.lp-countdown.before{color:#60a5fa}
+.lp-countdown.working{color:#fbbf24}
+.lp-countdown.done{color:#22c55e}
+.lp-countdown-time{font-size:1rem;font-weight:900;letter-spacing:.04em}
+.lp-period{font-size:.75rem;font-weight:700;white-space:nowrap;border-radius:20px;padding:6px 14px;letter-spacing:.02em;color:#a78bfa;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);display:none}
+.lp-period.active{display:block}
+.lp-period-label{font-size:1rem;font-weight:900}
+
+/* Hero */
+.lp-hero{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  padding:40px 24px 32px;
+  max-width:900px;margin:0 auto;width:100%;
+}
+.lp-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(59,130,246,.1);
+  border:1px solid rgba(59,130,246,.25);
+  border-radius:50px;padding:7px 18px;
+  margin-bottom:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.08em;
+  color:#60a5fa;
+  animation:fadeUp .6s ease .15s both;
+  backdrop-filter:blur(8px);
+}
+.lp-badge-icon{font-size:.85rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.lp-h1{
+  font-size:clamp(32px,6vw,72px);
+  font-weight:900;line-height:1;letter-spacing:-.04em;
+  margin-bottom:6px;overflow:hidden;
+  white-space:nowrap;
+}
+.lp-line{overflow:hidden;display:block}
+.lp-word{
+  display:inline-block;color:#f0f4ff;
+  transform:translateY(110%);
+  animation:lineReveal .7s cubic-bezier(.76,0,.24,1) forwards;
+}
+.lw1{animation-delay:.3s}
+.lw2{
+  animation-delay:.5s;
+  background:linear-gradient(90deg,#60a5fa 0%,#06b6d4 50%,#a78bfa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200% auto;
+  animation:lineReveal .7s cubic-bezier(.76,0,.24,1) .5s forwards,
+            gradShift 4s ease-in-out 1.2s infinite alternate;
+}
+@keyframes lineReveal{to{transform:translateY(0)}}
+@keyframes gradShift{0%{background-position:0% 50%}100%{background-position:100% 50%}}
+
+.lp-sub{
+  font-size:clamp(.9rem,2vw,1.1rem);color:#8892b0;line-height:1.7;
+  max-width:520px;margin:12px auto 0;
+  animation:fadeUp .6s ease .9s both;
+}
+
+/* CTA group */
+.lp-cta{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;
+  margin-top:24px;
+  animation:fadeUp .6s ease 1.1s both;
+}
+.lp-btn-primary{
+  position:relative;overflow:hidden;
+  display:inline-flex;align-items:center;gap:12px;
+  padding:20px 52px;border:none;border-radius:18px;
+  font-size:1.15rem;font-weight:800;letter-spacing:.01em;cursor:pointer;
+  background:linear-gradient(135deg,#2563eb,#0891b2);
+  color:#fff;
+  box-shadow:0 0 0 1px rgba(255,255,255,.1) inset,
+             0 8px 32px rgba(37,99,235,.4);
+  transition:transform .22s,box-shadow .22s;
+}
+.lp-btn-primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.12) 50%,transparent 65%);
+  transform:translateX(-100%);
+}
+.lp-btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(255,255,255,.15) inset, 0 14px 48px rgba(37,99,235,.55)}
+.lp-btn-primary:hover::before{transform:translateX(100%);transition:transform .55s}
+.lp-btn-icon{
+  width:30px;height:30px;border-radius:9px;
+  background:rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+/* Pulse ring behind primary btn */
+.lp-btn-primary::after{
+  content:'';position:absolute;inset:-4px;border-radius:20px;
+  border:1px solid rgba(59,130,246,.4);
+  animation:ringPulse 2.5s ease-in-out 1.5s infinite;
+}
+@keyframes ringPulse{
+  0%,100%{opacity:0;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.04)}
+}
+.lp-btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:17px 28px;border:1px solid rgba(255,255,255,.12);border-radius:16px;
+  font-size:.9rem;font-weight:700;cursor:pointer;
+  background:rgba(255,255,255,.04);color:#8892b0;
+  backdrop-filter:blur(8px);transition:all .22s;
+}
+.lp-btn-secondary:hover{background:rgba(255,255,255,.09);color:#f0f4ff;border-color:rgba(255,255,255,.2)}
+
+
+
+/* ==============================
+   CATEGORY
+============================== */
+#category{background:#0d1629;display:flex;flex-direction:column}
+
+.cat-bar{
+  position:sticky;top:0;z-index:10;
+  background:rgba(13,22,41,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cat-bar-title{
+  font-size:1.2rem;font-weight:900;color:#f0f4ff;letter-spacing:-.02em;
+}
+.cat-bar-title span{
+  background:linear-gradient(90deg,#60a5fa,#06b6d4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cat-bar-sub{font-size:.72rem;color:#4a5a7a;margin-top:2px}
+.cat-bar-back{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;padding:7px 14px;color:#8892b0;
+  font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;
+}
+.cat-bar-back:hover{background:rgba(255,255,255,.1);color:#f0f4ff}
+
+.cat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:14px;padding:20px 20px 40px;
+}
+
+/* Tile */
+.tile{
+  border-radius:22px;padding:28px 24px 24px;
+  cursor:pointer;min-height:178px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);
+  transition:transform .3s cubic-bezier(.34,1.4,.64,1),
+             box-shadow .3s ease,border-color .3s;
+  animation:tileSpring .55s cubic-bezier(.34,1.3,.64,1) both;
+}
+@keyframes tileSpring{
+  from{opacity:0;transform:translateY(32px) scale(.93)}
+  to  {opacity:1;transform:translateY(0)   scale(1)}
+}
+.tile:hover{transform:translateY(-7px) scale(1.025)}
+
+/* Tile glimmer layer */
+.tile-glimmer{
+  position:absolute;inset:0;border-radius:inherit;
+  opacity:0;transition:opacity .35s;
+  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 60%);
+}
+.tile:hover .tile-glimmer{opacity:1}
+
+/* Number watermark */
+.tile-num{
+  position:absolute;right:18px;top:14px;
+  font-size:2.8rem;font-weight:900;letter-spacing:-.05em;
+  color:rgba(255,255,255,.07);line-height:1;pointer-events:none;
+  transition:color .3s;
+}
+.tile:hover .tile-num{color:rgba(255,255,255,.12)}
+
+.tile-icon{
+  width:58px;height:58px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.14);
+  transition:transform .3s cubic-bezier(.34,1.5,.64,1),background .3s;
+  position:relative;z-index:1;
+}
+.tile-icon svg{width:28px;height:28px;stroke:rgba(255,255,255,.9);stroke-width:1.75;fill:none}
+.tile:hover .tile-icon{transform:scale(1.12);background:rgba(255,255,255,.22)}
+
+.tile-bottom{position:relative;z-index:1}
+.tile-name{font-size:1.05rem;font-weight:800;color:#f0f4ff;line-height:1.2;margin-bottom:8px}
+.tile-foot{display:flex;align-items:center;justify-content:space-between}
+.tile-badge{
+  font-size:.68rem;font-weight:700;
+  background:rgba(255,255,255,.12);
+  border-radius:20px;padding:3px 11px;color:rgba(255,255,255,.7);
+}
+.tile-arrow{
+  width:32px;height:32px;border-radius:10px;
+  background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:rgba(255,255,255,.4);
+  transition:background .25s,color .25s,transform .25s;
+}
+.tile:hover .tile-arrow{background:rgba(255,255,255,.25);color:#fff;transform:translate(2px,-2px)}
+
+/* Per-category gradients */
+.tg-blue   {background:linear-gradient(145deg,#1a3a6e,#1e4abe);box-shadow:0 4px 24px rgba(30,74,190,.3)}
+.tg-blue:hover  {box-shadow:0 14px 48px rgba(30,74,190,.5)}
+.tg-green  {background:linear-gradient(145deg,#0b3d2e,#0e6645);box-shadow:0 4px 24px rgba(14,102,69,.3)}
+.tg-green:hover {box-shadow:0 14px 48px rgba(14,102,69,.5)}
+.tg-purple {background:linear-gradient(145deg,#2d1b5e,#5b21b6);box-shadow:0 4px 24px rgba(91,33,182,.3)}
+.tg-purple:hover{box-shadow:0 14px 48px rgba(91,33,182,.5)}
+.tg-slate  {background:linear-gradient(145deg,#1e2d3d,#2c4163);box-shadow:0 4px 24px rgba(44,65,99,.3)}
+.tg-slate:hover {box-shadow:0 14px 48px rgba(44,65,99,.5)}
+.tg-amber  {background:linear-gradient(145deg,#3d1e00,#92400e);box-shadow:0 4px 24px rgba(146,64,14,.3)}
+.tg-amber:hover {box-shadow:0 14px 48px rgba(146,64,14,.5)}
+.tg-teal   {background:linear-gradient(145deg,#0a2e2d,#0f766e);box-shadow:0 4px 24px rgba(15,118,110,.3)}
+.tg-teal:hover  {box-shadow:0 14px 48px rgba(15,118,110,.5)}
+.tg-rose   {background:linear-gradient(145deg,#3d0b1e,#9f1239);box-shadow:0 4px 24px rgba(159,18,57,.3)}
+.tg-rose:hover  {box-shadow:0 14px 48px rgba(159,18,57,.5)}
+.tg-indigo {background:linear-gradient(145deg,#1a1750,#3730a3);box-shadow:0 4px 24px rgba(55,48,163,.3)}
+.tg-indigo:hover{box-shadow:0 14px 48px rgba(55,48,163,.5)}
+
+/* ==============================
+   LIST
+============================== */
+#list{background:#111c32;display:flex;flex-direction:column}
+
+.list-bar{
+  position:sticky;top:0;z-index:10;
+  background:rgba(17,28,50,.94);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:14px 20px;
+  display:flex;align-items:center;gap:12px;
+}
+.list-back{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:9px 14px;
+  color:#8892b0;font-size:.8rem;font-weight:700;cursor:pointer;
+  transition:all .2s;flex-shrink:0;
+}
+.list-back:hover{background:rgba(255,255,255,.12);color:#f0f4ff}
+.list-cat-tag{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 16px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+}
+.list-cat-tag .lct-icon{display:flex;align-items:center}
+.list-cat-tag .lct-icon svg{width:20px;height:20px;stroke:#f0f4ff;stroke-width:2;fill:none}
+.list-cat-tag .lct-name{font-size:.95rem;font-weight:800;color:#f0f4ff}
+.list-ct-badge{
+  margin-left:auto;font-size:.72rem;font-weight:700;
+  color:#60a5fa;background:rgba(59,130,246,.12);
+  border:1px solid rgba(59,130,246,.22);
+  border-radius:20px;padding:4px 12px;flex-shrink:0;
+}
+
+/* Link cards — LARGE */
+.list-wrap{
+  padding:20px 20px 48px;
+  display:flex;flex-direction:column;gap:12px;
+  max-width:760px;margin:0 auto;width:100%;
+}
+.lk{
+  display:flex;align-items:center;gap:20px;
+  background:#18273f;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:20px;
+  padding:22px 22px;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .28s cubic-bezier(.34,1.4,.64,1),
+             border-color .28s, box-shadow .28s;
+  animation:cardSpring .5s cubic-bezier(.34,1.25,.64,1) both;
+}
+@keyframes cardSpring{
+  from{opacity:0;transform:translateX(-28px) scale(.97)}
+  to  {opacity:1;transform:translateX(0)     scale(1)}
+}
+.lk:hover{
+  transform:translateX(8px) scale(1.01);
+  border-color:rgba(96,165,250,.35);
+  box-shadow:0 8px 40px rgba(59,130,246,.18);
+}
+
+/* Shimmer on hover */
+.lk::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.05) 50%,transparent 65%);
+  transform:translateX(-100%);
+}
+.lk:hover::after{transform:translateX(100%);transition:transform .55s}
+
+/* Accent line left */
+.lk::before{
+  content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;
+  border-radius:0 3px 3px 0;
+  background:linear-gradient(to bottom,#3b82f6,#06b6d4);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .3s cubic-bezier(.34,1.4,.64,1);
+}
+.lk:hover::before{transform:scaleY(1)}
+
+/* Large icon */
+.lk-icon{
+  width:68px;height:68px;flex-shrink:0;border-radius:18px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;overflow:hidden;
+  transition:transform .28s cubic-bezier(.34,1.5,.64,1),
+             background .28s,box-shadow .28s;
+}
+.lk-icon img{width:100%;height:100%;object-fit:contain;border-radius:10px;padding:6px}
+.lk:hover .lk-icon{
+  transform:scale(1.1) rotate(-4deg);
+  background:rgba(255,255,255,.13);
+  box-shadow:0 0 28px rgba(59,130,246,.35);
+}
+
+/* Text */
+.lk-body{flex:1;min-width:0}
+.lk-name{
+  font-size:1.05rem;font-weight:800;
+  color:#f0f4ff;line-height:1.2;margin-bottom:7px;
+}
+.lk-desc{
+  font-size:.82rem;color:#8892b0;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.lk-domain{
+  display:inline-block;margin-top:9px;
+  font-size:.68rem;color:#4a5a7a;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:6px;padding:2px 8px;
+}
+
+/* Go button */
+.lk-go{
+  flex-shrink:0;
+  width:44px;height:44px;border-radius:13px;
+  background:rgba(59,130,246,.1);
+  border:1px solid rgba(59,130,246,.18);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#60a5fa;
+  transition:background .25s,box-shadow .25s,transform .25s;
+}
+.lk:hover .lk-go{
+  background:rgba(59,130,246,.25);
+  box-shadow:0 0 20px rgba(59,130,246,.4);
+  transform:translate(2px,-2px);
+}
+
+
+
+/* ==============================
+   INFO WIDGETS
+============================== */
+/* Info Widgets */
+.lp-widgets{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto auto auto;
+  grid-template-areas:"weather wbgt" "alert alert" "route route";
+  gap:12px;
+  width:100%;
+  max-width:860px;
+  margin:24px 0 0;
+  align-self:stretch;
+  animation:fadeUp .6s ease 1s both;
+}
+#wg-weather{grid-area:weather}
+#wg-wbgt   {grid-area:wbgt}
+#wg-alert  {grid-area:alert}
+#wg-route  {grid-area:route}
+.wg{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;padding:16px 18px;
+  display:flex;flex-direction:column;gap:5px;
+  transition:border-color .25s,background .25s;
+  min-width:0;
+}
+.wg:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}
+.wg-lbl{
+  font-size:.6rem;font-weight:700;letter-spacing:.1em;
+  color:#4a5a7a;text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.wg-updated{font-size:.58rem;font-weight:600;color:#2d3f55;letter-spacing:.03em;text-transform:none}
+.wg-val{font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:900;color:#f0f4ff;line-height:1.2;white-space:nowrap}
+.wg-sub{font-size:.78rem;color:#8892b0;line-height:1.5}
+.wg-detail{font-size:.7rem;color:#60748a;line-height:1.6;margin-top:2px}
+.wg-hourly{
+  display:flex;gap:4px;overflow-x:auto;
+  margin-top:10px;padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.07);
+  scrollbar-width:none;
+}
+.wg-hourly::-webkit-scrollbar{display:none}
+.wg-hour{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:44px;text-align:center;flex-shrink:0;
+}
+.wg-hour.now .wg-h-time{color:#60a5fa;font-weight:800}
+.wg-hour.now .wg-h-temp{color:#60a5fa}
+.wg-h-time{font-size:.58rem;color:#4a5a7a;font-weight:600}
+.wg-h-icon{font-size:1.1rem;line-height:1.3;color:#f0f4ff}
+.wg-h-temp{font-size:.72rem;font-weight:700;color:#f0f4ff}
+.wg-h-pop {font-size:.58rem;color:#38bdf8}
+.wg-err{font-size:.75rem;color:#2d3f55}
+.wg-spin{font-size:.75rem;color:#2d3f55;animation:wgPulse 1.4s ease infinite}
+/* Route search widget */
+.route-row{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.route-input{
+  flex:1;min-width:160px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:9px 14px;
+  color:#f0f4ff;font-size:.85rem;outline:none;
+  transition:border-color .2s;
+}
+.route-input::placeholder{color:#3a4a64}
+.route-input:focus{border-color:rgba(96,165,250,.5);background:rgba(255,255,255,.1)}
+.route-modes{display:flex;gap:6px}
+.route-mode{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:7px 12px;font-size:.8rem;color:#8892b0;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.route-mode.active,.route-mode:hover{background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.4);color:#60a5fa}
+.route-btn{
+  background:linear-gradient(135deg,#3b82f6,#06b6d4);
+  border:none;border-radius:10px;padding:9px 20px;
+  color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap;
+  transition:opacity .2s,transform .2s;
+}
+.route-btn:hover{opacity:.85;transform:translateY(-1px)}
+.route-direction{font-size:.78rem;color:#6a7a9a;white-space:nowrap}
+.route-swap{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:7px 11px;color:#8892b0;font-size:1rem;
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.route-swap:hover{background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.4);color:#60a5fa}
+@keyframes wgPulse{0%,100%{opacity:.3}50%{opacity:.8}}
+.c-safe   {color:#22c55e}
+.c-caution{color:#eab308}
+.c-warn   {color:#f97316}
+.c-danger {color:#ef4444}
+.c-stop   {color:#dc2626;font-weight:900}
+.c-blue   {color:#60a5fa}
+</style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
-  <!-- ===== Header ===== -->
-  <header>
-    <div class="header-brand">
-      <div class="logo-icon">🏫</div>
-      <span class="site-name">新荏田西ポータル</span>
-    </div>
-    <div class="header-right">
-      <div class="header-spacer"></div>
-      <div class="header-search">
-        <input type="search" id="searchInput" placeholder="リンクを検索..." autocomplete="off">
-        <span class="search-icon">🔍</span>
-      </div>
-      <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </header>
+<div id="app">
 
-  <!-- ===== Drawer (mobile) ===== -->
-  <div class="drawer-overlay" id="overlay"></div>
-  <nav class="drawer" id="drawer">
-    <div class="drawer-header">
-      <span class="drawer-title">新荏田西ポータル</span>
-      <button class="drawer-close" id="drawerClose" aria-label="閉じる">✕</button>
+<!-- ===== INTRO ===== -->
+<div class="page active" id="intro">
+  <div class="lp-mesh"></div>
+  <div class="lp-grid"></div>
+
+  <!-- Nav -->
+  <nav class="lp-nav">
+    <div class="lp-nav-center">
+      <div class="lp-clock" id="lp-clock"></div>
+      <div class="lp-countdown" id="lp-countdown"></div>
     </div>
-    <nav>
-      <!-- ===== Drawer Nav START ===== -->
-      <div class="sidebar-label" style="padding:16px 18px 6px;">カテゴリ</div>
-      <a class="sidebar-link" href="#gakusyu"><span class="nav-icon">📚</span>学習管理</a>
-      <a class="sidebar-link" href="#jidou"><span class="nav-icon">👦</span>児童管理</a>
-      <a class="sidebar-link" href="#digital"><span class="nav-icon">💻</span>デジタル教科書</a>
-      <a class="sidebar-link" href="#校務管理"><span class="nav-icon">📁</span>校務管理</a>
-      <a class="sidebar-link" href="#生成ai"><span class="nav-icon">⭐</span>生成AI</a>
-      <a class="sidebar-link" href="#研修管理"><span class="nav-icon">🗂️</span>研修管理</a>
-      <a class="sidebar-link" href="#授業準備教材作成"><span class="nav-icon">📌</span>授業準備・教材作成</a>
-      <a class="sidebar-link" href="#便利ツール"><span class="nav-icon">🏷️</span>便利ツール</a>
-      <!-- ===== Drawer Nav END ===== -->
-    </nav>
+    <div class="lp-school-info">
+      <div class="lp-school-name">横浜市立荏田西小学校</div>
+      <div class="lp-school-meta">
+        <span>📍 横浜市青葉区荏田西4-5-1</span>
+        <span>📞 045-911-4481</span>
+        <span>📠 045-913-0122</span>
+      </div>
+    </div>
+    <div class="lp-nav-right">
+      <div class="lp-period" id="lp-period"></div>
+    </div>
   </nav>
 
-  <!-- ===== Layout ===== -->
-  <div class="layout">
+  <!-- Hero -->
+  <section class="lp-hero">
+    <h1 class="lp-h1">
+      <span class="lp-line">
+        <span class="lp-word lw1">新荏田西</span><span class="lp-word lw2">ポータル</span>
+      </span>
+    </h1>
 
-    <!-- Sidebar -->
-    <aside id="sidebar">
-      <!-- ===== Sidebar Nav START ===== -->
-      <div class="sidebar-label">カテゴリ</div>
-      <a class="sidebar-link active" href="#gakusyu"><span class="nav-icon">📚</span>学習管理</a>
-      <a class="sidebar-link" href="#jidou"><span class="nav-icon">👦</span>児童管理</a>
-      <a class="sidebar-link" href="#digital"><span class="nav-icon">💻</span>デジタル教科書</a>
-      <a class="sidebar-link" href="#校務管理"><span class="nav-icon">📁</span>校務管理</a>
-      <a class="sidebar-link" href="#生成ai"><span class="nav-icon">⭐</span>生成AI</a>
-      <a class="sidebar-link" href="#研修管理"><span class="nav-icon">🗂️</span>研修管理</a>
-      <a class="sidebar-link" href="#授業準備教材作成"><span class="nav-icon">📌</span>授業準備・教材作成</a>
-      <a class="sidebar-link" href="#便利ツール"><span class="nav-icon">🏷️</span>便利ツール</a>
-      <!-- ===== Sidebar Nav END ===== -->
-    </aside>
+    <!-- Info Widgets -->
+    <div class="lp-widgets">
+      <div class="wg" id="wg-weather">
+        <div class="wg-lbl">🌤 天気 — 横浜市青葉区<span class="wg-updated"></span></div>
+        <div class="wg-spin">読込中…</div>
+      </div>
+      <div class="wg" id="wg-wbgt">
+        <div class="wg-lbl">🌡 暑さ指数 WBGT<span class="wg-updated"></span></div>
+        <div class="wg-spin">読込中…</div>
+      </div>
 
-    <!-- Main Content -->
-    <main>
-
-      <!-- ===== 学習管理 ===== -->
-      <section class="section" id="gakusyu">
-        <div class="section-header">
-          <div class="section-icon icon-blue">📚</div>
-          <div class="section-info">
-            <div class="section-title">学習管理</div>
-            <div class="section-desc">授業・学習支援に使うツール</div>
+      <div class="wg" id="wg-alert">
+        <div class="wg-lbl">🚨 気象警報・注意報 — 横浜市<span class="wg-updated"></span></div>
+        <div class="wg-spin">読込中…</div>
+      </div>
+      <div class="wg" id="wg-route">
+        <div class="wg-lbl">🗺 学校へのルート検索</div>
+        <div class="route-row">
+          <div class="route-direction" id="route-direction-label">🏫 学校 → 📍 入力地点</div>
+          <button class="route-swap" id="route-swap" onclick="swapRoute()" title="出発・到着を入れ替え">⇄</button>
+          <input class="route-input" id="route-other" type="text" placeholder="地点を入力（例: 青葉台駅）">
+          <div class="route-modes">
+            <button class="route-mode active" data-mode="driving">🚗 車</button>
+            <button class="route-mode" data-mode="transit">🚃 電車</button>
+            <button class="route-mode" data-mode="walking">🚶 徒歩</button>
+            <button class="route-mode" data-mode="bicycling">🚲 自転車</button>
           </div>
+          <button class="route-btn" onclick="openRoute()">ルート検索 →</button>
         </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://loilonote.app/login?hl=ja-JP" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row2.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">ロイロノート</div>
-                <div class="card-tag">学習管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">loilonote.app</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://classroom.google.com/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row3.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Google Classroom</div>
-                <div class="card-tag">学習管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">classroom.google.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://yokohama-edu.l-gate.net/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row4.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">L-gate</div>
-                <div class="card-tag">学習管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">yokohama-edu.l-gate.net</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://monoxer.com/login" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row5.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Monoxer管理画面</div>
-                <div class="card-tag">学習管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">monoxer.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.canva.com/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row6.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Canva</div>
-                <div class="card-tag">学習管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">canva.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
+      </div>
+    </div>
 
-      <!-- ===== 児童管理 ===== -->
-      <section class="section" id="jidou">
-        <div class="section-header">
-          <div class="section-icon icon-green">👦</div>
-          <div class="section-info">
-            <div class="section-title">児童管理</div>
-            <div class="section-desc">出席・成績・情報管理ツール</div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://eschool.office.ycan/loginNow.do" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">👦</div>
-              <div class="card-body">
-                <div class="card-title">校務システム</div>
-                <div class="card-tag">児童管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">学校基本情報管理システム</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">eschool.office.ycan</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://sughool.jp/ctrl/yokohama-sch/c" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row8.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">すぐーる</div>
-                <div class="card-tag">児童管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">sughool.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://study-navi.edu.city.yokohama.jp/teachers/home" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row9.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">横浜St☆dyNavi</div>
-                <div class="card-tag">児童管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">study-navi.edu.city.yokohama.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
+    <div class="lp-cta">
+      <button class="lp-btn-primary" onclick="navigate('intro','category')">
+        カテゴリを選ぶ
+        <div class="lp-btn-icon">→</div>
+      </button>
+    </div>
 
-      <!-- ===== デジタル教科書 ===== -->
-      <section class="section" id="digital">
-        <div class="section-header">
-          <div class="section-icon icon-purple">💻</div>
-          <div class="section-info">
-            <div class="section-title">デジタル教科書</div>
-            <div class="section-desc">電子教材・デジタル教科書ポータル</div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://manaviewer.jp/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row10.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">まなビューア</div>
-                <div class="card-tag">デジタル教科書</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">国語・外国語・生活</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">manaviewer.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.lentrance.com/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row11.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Lentrance</div>
-                <div class="card-tag">デジタル教科書</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">算数・理科・保健</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">lentrance.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://mirai-pf.jp/user/login.html" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row12.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">みらいスクールプラットフォーム</div>
-                <div class="card-tag">デジタル教科書</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">社会・家庭</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">mirai-pf.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://d-support.kyoiku-shuppan.co.jp/dk/r6e/teacher.php" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row13.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">教育出版</div>
-                <div class="card-tag">デジタル教科書</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">道徳・音楽</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">d-support.kyoiku-shuppan.co.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://docs.google.com/spreadsheets/d/11GfoSJRXT-MHWPGXYSvHym5WzGsMN9plL8rt4h9PTKM/edit" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">💻</div>
-              <div class="card-body">
-                <div class="card-title">デジタル教科書ID一覧表</div>
-                <div class="card-tag">デジタル教科書</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">各社のID・パスワードが見れます。</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">docs.google.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://y05187773-ai.github.io/nenkei-keikaku/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">💻</div>
-              <div class="card-body">
-                <div class="card-title">年間指導計画 検索・閲覧</div>
-                <div class="card-tag">デジタル教科書</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">各社の年間指導計画例を閲覧できます。</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">y05187773-ai.github.io</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
+  </section>
 
-      <!-- ===== 校務管理 ===== -->
-      <section class="section" id="校務管理">
-        <div class="section-header">
-          <div class="section-icon icon-blue">📁</div>
-          <div class="section-info">
-            <div class="section-title">校務管理</div>
-            <div class="section-desc"></div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://y.milim.jp/yokohama/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row16.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">ミライム</div>
-                <div class="card-tag">校務管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">y.milim.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://eschool.office.ycan/loginNow.do" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">📁</div>
-              <div class="card-body">
-                <div class="card-title">校務システム</div>
-                <div class="card-tag">校務管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">学校基本情報管理システム</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">eschool.office.ycan</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://ycan.city.yokohama.lg.jp/index.html" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">📁</div>
-              <div class="card-body">
-                <div class="card-title">YCAN（外部）</div>
-                <div class="card-tag">校務管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">ycan.city.yokohama.lg.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="http://ky-benricho.office.ycan/yc/menu.php" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">📁</div>
-              <div class="card-body">
-                <div class="card-title">学校便利帳</div>
-                <div class="card-tag">校務管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">ky-benricho.office.ycan</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://ky-shomu.office.ycan/SMART_SHOMU/start.do?screenSize=0" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">📁</div>
-              <div class="card-body">
-                <div class="card-title">庶務事務システム</div>
-                <div class="card-tag">校務管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">ky-shomu.office.ycan</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://ysam.office.ycan/ysam/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">📁</div>
-              <div class="card-body">
-                <div class="card-title">資産管理システム</div>
-                <div class="card-tag">校務管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">ysam.office.ycan</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
+</div>
 
-      <!-- ===== 生成AI ===== -->
-      <section class="section" id="生成ai">
-        <div class="section-header">
-          <div class="section-icon icon-green">⭐</div>
-          <div class="section-info">
-            <div class="section-title">生成AI</div>
-            <div class="section-desc"></div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://gemini.google.com/app?hl=ja" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row22.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Gemini</div>
-                <div class="card-tag">生成AI</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">gemini.google.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://notebooklm.google.com/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row23.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Notebook LM</div>
-                <div class="card-tag">生成AI</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">notebooklm.google.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      <!-- ===== 研修管理 ===== -->
-      <section class="section" id="研修管理">
-        <div class="section-header">
-          <div class="section-icon icon-purple">🗂️</div>
-          <div class="section-info">
-            <div class="section-title">研修管理</div>
-            <div class="section-desc"></div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="http://plant.nits.go.jp/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row24.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Plant</div>
-                <div class="card-tag">研修管理</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc">全国教員研修プラットフォーム</div>
-                <div class="detail-footer">
-                  <span class="detail-domain">plant.nits.go.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      <!-- ===== 授業準備・教材作成 ===== -->
-      <section class="section" id="授業準備教材作成">
-        <div class="section-header">
-          <div class="section-icon icon-orange">📌</div>
-          <div class="section-info">
-            <div class="section-title">授業準備・教材作成</div>
-            <div class="section-desc"></div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://happylilac.net/mu-s/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row25.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">ちびむすドリル</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">happylilac.net</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://print-kids.net/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb">📌</div>
-              <div class="card-body">
-                <div class="card-title">ぷりんときっず</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">print-kids.net</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.irasutoya.com/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row27.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">かわいいフリー素材集 いらすとや</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">irasutoya.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.nhk.or.jp/school/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row28.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">NHK for School</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">nhk.or.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://kahoot.com/ja/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row29.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Kahoot!（カフート）</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">kahoot.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://wayground.com/?lng=ja" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row30.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">Quizizz（クイジズ）</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">wayground.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.mext.go.jp/sports/b_menu/sports/mcatetop04/list/jsa_00003.htm#14" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row31.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">スポーツ庁　小学校体育指導の手引</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">mext.go.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://textmining.userlocal.jp/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row32.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">AIテキストマイニング</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">textmining.userlocal.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://script.google.com/a/macros/edu.city.yokohama.jp/s/AKfycbwGnzAij-HrqohuwKFdA7FEiEiY89JRYjCaCFY0ZRAFZLAhBnbLao9fKvNQna18ucdaQg/exec" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row33.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">器械運動動画集</div>
-                <div class="card-tag">授業準備・教材作成</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">script.google.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      <!-- ===== 便利ツール ===== -->
-      <section class="section" id="便利ツール">
-        <div class="section-header">
-          <div class="section-icon icon-gray">🏷️</div>
-          <div class="section-info">
-            <div class="section-title">便利ツール</div>
-            <div class="section-desc"></div>
-          </div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-grid">
-          <a class="card" href="https://www.ilovepdf.com/ja" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row34.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">I Love PDF</div>
-                <div class="card-tag">便利ツール</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">ilovepdf.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.iloveimg.com/ja" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row35.jpeg" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">I Love IMG</div>
-                <div class="card-tag">便利ツール</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">iloveimg.com</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://gigafile.nu/" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row36.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">GIGAファイル便</div>
-                <div class="card-tag">便利ツール</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">gigafile.nu</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a class="card" href="https://www.wbgt.env.go.jp/sp/graph_ref_td.php?region=03&amp;prefecture=46&amp;point=46106" target="_blank" rel="noopener">
-            <div class="card-main">
-              <div class="card-thumb"><img src="icons/row37.png" alt="icon" onerror="this.parentNode.innerHTML='🔗'"></div>
-              <div class="card-body">
-                <div class="card-title">環境省熱中症予防サイト</div>
-                <div class="card-tag">便利ツール</div>
-              </div>
-              <span class="card-chevron">›</span>
-            </div>
-            <div class="card-detail">
-              <div class="detail-inner">
-                <div class="detail-desc"></div>
-                <div class="detail-footer">
-                  <span class="detail-domain">wbgt.env.go.jp</span>
-                  <span class="detail-open">開く ›</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-    </main>
+<!-- ===== CATEGORY ===== -->
+<div class="page" id="category">
+  <div class="cat-bar">
+    <div>
+      <div class="cat-bar-title"><span>カテゴリ</span>を選択</div>
+      <div class="cat-bar-sub">タップしてリンク一覧を表示</div>
+    </div>
+    <button class="cat-bar-back" onclick="navigate('category','intro')">← トップ</button>
   </div>
+  <div class="cat-grid" id="catGrid"></div>
+</div>
 
-  <!-- ===== Footer ===== -->
-  <footer>
-    <span class="footer-name">荏田西小学校</span>
-    <span class="footer-meta">最終更新: 2025年○月○日</span>
-  </footer>
+<!-- ===== LIST ===== -->
+<div class="page" id="list">
+  <div class="list-bar">
+    <button class="list-back" onclick="navigate('list','category')">← カテゴリ</button>
+    <div class="list-cat-tag">
+      <span class="lct-icon" id="listIcon"></span>
+      <span class="lct-name" id="listName"></span>
+    </div>
+    <span class="list-ct-badge" id="listBadge"></span>
+  </div>
+  <div class="list-wrap" id="listWrap"></div>
+</div>
 
-  <!-- Scroll-to-top -->
-  <button class="back-top" id="backTop" aria-label="トップへ戻る">↑</button>
+</div><!-- #app -->
 
-  <script src="script.js"></script>
+<script>
+const CATS = [
+  {icon:'book-open', name:'学習管理',           color:'tg-blue',   count:5, links:[
+    {name:'ロイロノート',                url:'https://loilonote.app/login?hl=ja-JP',                        img:'icons/row2.png',   desc:'カードで思考を整理するタブレット授業支援ツール。授業の流れをビジュアルに設計できる。',         domain:'loilonote.app'},
+    {name:'Google Classroom',           url:'https://classroom.google.com/',                               img:'icons/row3.png',   desc:'課題の配布・提出・採点・フィードバックを一元管理。Googleドライブと連携。',                    domain:'classroom.google.com'},
+    {name:'L-gate',                     url:'https://yokohama-edu.l-gate.net/',                            img:'icons/row4.png',   desc:'横浜市教育ICTプラットフォーム。各種デジタルツールへのアクセス窓口。',                          domain:'l-gate.net'},
+    {name:'Monoxer管理画面',            url:'https://monoxer.com/login',                                   img:'icons/row5.png',   desc:'AIが記憶の定着をサポートする個別最適化学習ツール。教師用管理画面。',                            domain:'monoxer.com'},
+    {name:'Canva',                      url:'https://www.canva.com/',                                      img:'icons/row6.png',   desc:'豊富なテンプレートから素早く教材・掲示物をデザイン。教育機関は無料。',                          domain:'canva.com'},
+  ]},
+  {icon:'users', name:'児童管理',           color:'tg-green',  count:3, links:[
+    {name:'校務システム',                url:'https://eschool.office.ycan/loginNow.do',                     img:null,               desc:'横浜市学校内部向け校務支援システム（YCAN内アクセス専用）。',                                    domain:'office.ycan'},
+    {name:'すぐーる',                   url:'https://sughool.jp/ctrl/yokohama-sch/c',                       img:'icons/row8.png',   desc:'保護者への一斉連絡・欠席連絡・アンケートをスマホから簡単操作。',                                domain:'sughool.jp'},
+    {name:'横浜St☆dyNavi',             url:'https://study-navi.edu.city.yokohama.jp/teachers/home',        img:'icons/row9.png',   desc:'横浜市の学習支援ナビゲーション。家庭学習・授業準備に活用。',                                    domain:'edu.city.yokohama.jp'},
+  ]},
+  {icon:'monitor', name:'デジタル教科書',     color:'tg-purple', count:6, links:[
+    {name:'まなビューア',               url:'https://manaviewer.jp/',                                       img:'icons/row10.jpeg', desc:'デジタル教科書閲覧プラットフォーム。複数教科書を一括管理。',                                    domain:'manaviewer.jp'},
+    {name:'Lentrance',                  url:'https://www.lentrance.com/',                                  img:'icons/row11.png',  desc:'デジタル教科書・教材の流通プラットフォーム。IDで各社コンテンツにアクセス。',                     domain:'lentrance.com'},
+    {name:'みらいスクールプラットフォーム', url:'https://mirai-pf.jp/user/login.html',                     img:'icons/row12.png',  desc:'クラウド型教育プラットフォーム。授業支援・学習管理を統合。',                                    domain:'mirai-pf.jp'},
+    {name:'教育出版',                   url:'https://d-support.kyoiku-shuppan.co.jp/dk/r6e/teacher.php',   img:'icons/row13.png',  desc:'教育出版のデジタル教科書・指導書・授業サポート資料。',                                          domain:'kyoiku-shuppan.co.jp'},
+    {name:'デジタル教科書ID一覧表',     url:'https://docs.google.com/spreadsheets/d/11GfoSJRXT-MHWPGXYSvHym5WzGsMN9plL8rt4h9PTKM/edit', img:null, desc:'各教科のデジタル教科書ログインIDをまとめた一覧表（Googleスプレッドシート）。', domain:'docs.google.com'},
+    {name:'年間指導計画 検索・閲覧',    url:'https://y05187773-ai.github.io/nenkei-keikaku/',              img:null,               desc:'年間指導計画を単元・教科別に検索・閲覧できるツール。',                                          domain:'github.io'},
+  ]},
+  {icon:'folder-open', name:'校務管理',           color:'tg-slate',  count:6, links:[
+    {name:'ミライム',                   url:'https://y.milim.jp/yokohama/',                                img:'icons/row16.png',  desc:'横浜市の校務・ICT支援システム。各種申請・書類管理に対応。',                                    domain:'milim.jp'},
+    {name:'校務システム',               url:'https://eschool.office.ycan/loginNow.do',                     img:null,               desc:'横浜市学校内部向け校務支援システム（YCAN内アクセス専用）。',                                    domain:'office.ycan'},
+    {name:'YCAN（外部）',              url:'https://ycan.city.yokohama.lg.jp/index.html',                  img:null,               desc:'横浜市教職員向けネットワーク。外部からのメール・連絡確認に。',                                  domain:'ycan.city.yokohama.lg.jp'},
+    {name:'学校便利帳',                url:'http://ky-benricho.office.ycan/yc/menu.php',                   img:null,               desc:'横浜市立学校向けの各種書式・マニュアルをまとめた便利帳。',                                      domain:'office.ycan'},
+    {name:'庶務事務システム',           url:'https://ky-shomu.office.ycan/SMART_SHOMU/start.do',           img:null,               desc:'横浜市教職員の給与・旅費・各種申請を処理する庶務事務システム。',                                domain:'office.ycan'},
+    {name:'資産管理システム',           url:'https://ysam.office.ycan/ysam/',                              img:null,               desc:'学校備品・ICT機器の資産管理システム。台帳管理・廃棄申請に。',                                  domain:'office.ycan'},
+  ]},
+  {icon:'sparkles', name:'生成AI',             color:'tg-amber',  count:2, links:[
+    {name:'Gemini',                     url:'https://gemini.google.com/app?hl=ja',                         img:'icons/row22.png',  desc:'GoogleのAI。教材作成・調査・アイデア出しを自然な対話でサポート。',                              domain:'gemini.google.com'},
+    {name:'Notebook LM',                url:'https://notebooklm.google.com/',                              img:'icons/row23.png',  desc:'資料をアップロードしてAIに質問・要約させられるリサーチツール。',                                domain:'notebooklm.google.com'},
+  ]},
+  {icon:'clipboard-list', name:'研修管理',           color:'tg-teal',   count:1, links:[
+    {name:'Plant',                      url:'http://plant.nits.go.jp/',                                    img:'icons/row24.png',  desc:'教職員等中央研修の申込・受講・証明書発行システム（国立教育政策研究所）。',                      domain:'plant.nits.go.jp'},
+  ]},
+  {icon:'pencil-ruler', name:'授業準備・教材作成', color:'tg-rose',   count:9, links:[
+    {name:'ちびむすドリル',             url:'https://happylilac.net/mu-s/',                                img:'icons/row25.png',  desc:'小学生向けの無料プリント・ドリル教材。国語・算数・英語など各教科対応。',                        domain:'happylilac.net'},
+    {name:'ぷりんときっず',             url:'https://print-kids.net/',                                     img:null,               desc:'子ども向け無料プリント素材。知育・学習・ぬりえなど幅広いジャンル。',                            domain:'print-kids.net'},
+    {name:'いらすとや',                url:'https://www.irasutoya.com/',                                   img:'icons/row27.jpeg', desc:'授業の資料や掲示物で使えるフリーイラスト素材集。日本最大級の無料素材サイト。',                  domain:'irasutoya.com'},
+    {name:'NHK for School',             url:'https://www.nhk.or.jp/school/',                               img:'icons/row28.jpeg', desc:'各教科・単元に対応した授業動画ライブラリ。NHK制作の高品質な教育コンテンツ。',                  domain:'nhk.or.jp'},
+    {name:'Kahoot!（カフート）',        url:'https://kahoot.com/ja/',                                      img:'icons/row29.png',  desc:'ゲーム感覚のクイズで授業参加率アップ。スマホ・タブレットで即座に参加できる。',                  domain:'kahoot.com'},
+    {name:'Quizizz（クイジズ）',        url:'https://wayground.com/?lng=ja',                               img:'icons/row30.png',  desc:'自分のペースで取り組める個別最適化クイズ学習ツール。宿題・復習にも。',                          domain:'wayground.com'},
+    {name:'スポーツ庁 体育指導の手引', url:'https://www.mext.go.jp/sports/b_menu/sports/mcatetop04/list/jsa_00003.htm#14', img:'icons/row31.png', desc:'小学校体育の授業設計に役立つスポーツ庁公式指導資料。',  domain:'mext.go.jp'},
+    {name:'AIテキストマイニング',       url:'https://textmining.userlocal.jp/',                            img:'icons/row32.png',  desc:'文章を貼り付けるだけでキーワード分析・ワードクラウドを生成。アンケート集計に最適。',            domain:'textmining.userlocal.jp'},
+    {name:'器械運動動画集',             url:'https://script.google.com/a/macros/edu.city.yokohama.jp/s/AKfycbwGnzAij-HrqohuwKFdA7FEiEiY89JRYjCaCFY0ZRAFZLAhBnbLao9fKvNQna18ucdaQg/exec', img:'icons/row33.png', desc:'横浜市作成の器械運動（跳び箱・鉄棒・マット）授業動画集。', domain:'edu.city.yokohama.jp'},
+  ]},
+  {icon:'wrench', name:'便利ツール',         color:'tg-indigo', count:4, links:[
+    {name:'I Love PDF',                 url:'https://www.ilovepdf.com/ja',                                 img:'icons/row34.png',  desc:'PDF結合・分割・圧縮・変換など各種PDF操作が無料でできるオンラインツール。',                     domain:'ilovepdf.com'},
+    {name:'I Love IMG',                 url:'https://www.iloveimg.com/ja',                                 img:'icons/row35.jpeg', desc:'画像のリサイズ・圧縮・切り抜き・変換などが無料でできるオンラインツール。',                    domain:'iloveimg.com'},
+    {name:'GIGAファイル便',             url:'https://gigafile.nu/',                                        img:'icons/row36.png',  desc:'大容量ファイルの送受信に。最大200GBまで無料・会員登録不要。',                                  domain:'gigafile.nu'},
+    {name:'環境省熱中症予防サイト',     url:'https://www.wbgt.env.go.jp/sp/graph_ref_td.php?region=03&prefecture=46&point=46106', img:'icons/row37.png', desc:'熱中症対策の暑さ指数（WBGT）をリアルタイム確認。体育・外遊びの可否判断に。', domain:'wbgt.env.go.jp'},
+  ]},
+];
+
+// アイコンHTMLを生成（画像 or イニシャル）
+function iconHTML(l) {
+  if (l.img) {
+    return `<img src="${l.img}" alt="${l.name}" style="width:100%;height:100%;object-fit:contain;border-radius:10px"
+      onerror="this.parentNode.innerHTML=initialIcon('${l.name[0]}')">`;
+  }
+  return initialIcon(l.name[0]);
+}
+function initialIcon(ch) {
+  return `<span style="font-size:1.4rem;font-weight:900;color:rgba(255,255,255,.6)">${ch}</span>`;
+}
+
+// Build category grid
+const catGrid = document.getElementById('catGrid');
+CATS.forEach((c, i) => {
+  const el = document.createElement('div');
+  el.className = `tile ${c.color}`;
+  el.style.animationDelay = `${i * 0.07}s`;
+  el.innerHTML = `
+    <div class="tile-glimmer"></div>
+    <div class="tile-num">${String(i+1).padStart(2,'0')}</div>
+    <div class="tile-icon"><i data-lucide="${c.icon}"></i></div>
+    <div class="tile-bottom">
+      <div class="tile-name">${c.name}</div>
+      <div class="tile-foot">
+        <span class="tile-badge">${c.count}件</span>
+        <div class="tile-arrow">↗</div>
+      </div>
+    </div>`;
+  el.onclick = () => showList(c);
+  catGrid.appendChild(el);
+});
+lucide.createIcons();
+
+// Show link list
+function showList(cat) {
+  document.getElementById('listIcon').innerHTML = `<i data-lucide="${cat.icon}"></i>`;
+  document.getElementById('listName').textContent = cat.name;
+  lucide.createIcons();
+  document.getElementById('listBadge').textContent = `${cat.count}件`;
+  const wrap = document.getElementById('listWrap');
+  wrap.innerHTML = '';
+  cat.links.forEach((l, i) => {
+    const el = document.createElement('a');
+    el.className = 'lk';
+    el.href = l.url; el.target = '_blank'; el.rel = 'noopener';
+    el.style.animationDelay = `${i * 0.07}s`;
+    el.innerHTML = `
+      <div class="lk-icon">${iconHTML(l)}</div>
+      <div class="lk-body">
+        <div class="lk-name">${l.name}</div>
+        <div class="lk-desc">${l.desc}</div>
+        <span class="lk-domain">${l.domain}</span>
+      </div>
+      <div class="lk-go">›</div>`;
+    wrap.appendChild(el);
+  });
+  navigate('category', 'list');
+}
+
+// ========== INFO WIDGETS ==========
+
+function timedFetch(url, ms) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms || 7000))
+  ]);
+}
+function proxy(url) {
+  return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+}
+
+// 横浜市青葉区の座標
+const LAT = 35.5565, LNG = 139.5354;
+
+// WMO天気コード → アイコン・説明
+const WMO = {
+  0:['☀️','快晴'], 1:['🌤','晴れ'], 2:['⛅','くもりがち'], 3:['☁️','くもり'],
+  45:['🌫','霧'], 48:['🌫','霧氷'],
+  51:['🌦','小雨'], 53:['🌧','雨'], 55:['🌧','強い雨'],
+  61:['🌧','小雨'], 63:['🌧','雨'], 65:['🌧','大雨'],
+  71:['🌨','小雪'], 73:['🌨','雪'], 75:['❄️','大雪'],
+  80:['🌦','にわか雨'], 81:['🌧','にわか雨'], 82:['⛈','強いにわか雨'],
+  95:['⛈','雷雨'], 96:['⛈','雷雨・ひょう'], 99:['⛈','激しい雷雨'],
+};
+function wmoInfo(code) { return WMO[code] || ['🌤','—']; }
+
+function windDirLabel(deg) {
+  const d = ['北','北北東','北東','東北東','東','東南東','南東','南南東',
+             '南','南南西','南西','西南西','西','西北西','北西','北北西'];
+  return d[Math.round(deg / 22.5) % 16];
+}
+
+async function fetchWeather() {
+  const el = document.getElementById('wg-weather');
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LNG}`
+      + `&current=temperature_2m,apparent_temperature,relative_humidity_2m,`
+      + `precipitation,weather_code,wind_speed_10m,wind_direction_10m`
+      + `&hourly=temperature_2m,weather_code,precipitation_probability,wet_bulb_temperature_2m`
+      + `&forecast_days=2&timezone=Asia%2FTokyo`;
+    const res = await timedFetch(url);
+    const d = await res.json();
+    const c = d.current;
+    const [icon, desc] = wmoInfo(c.weather_code);
+    const windDir = windDirLabel(c.wind_direction_10m);
+
+    // 今の時刻から8時間分の時間別予報
+    const now = new Date();
+    const curHour = now.getHours();
+    const hourlyTimes = d.hourly.time; // "2026-06-27T00:00" 形式
+    const startIdx = hourlyTimes.findIndex(t => {
+      const h = new Date(t).getHours();
+      const day = new Date(t).toDateString();
+      return day === now.toDateString() && h === curHour;
+    });
+    const hourSlots = [];
+    for (let i = 0; i <= 8; i++) {
+      const idx = (startIdx >= 0 ? startIdx : curHour) + i;
+      if (idx >= hourlyTimes.length) break;
+      const t = new Date(hourlyTimes[idx]);
+      const [hIcon] = wmoInfo(d.hourly.weather_code[idx]);
+      const hTemp = d.hourly.temperature_2m[idx];
+      const hPop  = d.hourly.precipitation_probability[idx];
+      hourSlots.push(`
+        <div class="wg-hour ${i===0?'now':''}">
+          <div class="wg-h-time">${i===0?'今':t.getHours()+'時'}</div>
+          <div class="wg-h-icon">${hIcon}</div>
+          <div class="wg-h-temp">${hTemp}°</div>
+          <div class="wg-h-pop">${hPop>0?hPop+'%':''}</div>
+        </div>`);
+    }
+
+    // WBGT — 現在値＋時間別（同じfetchで処理）
+    const hIdx = startIdx >= 0 ? startIdx : curHour;
+    const tw = d.hourly.wet_bulb_temperature_2m[hIdx]
+      ?? stullWetBulb(c.temperature_2m, c.relative_humidity_2m);
+    const wbgt = Math.round((0.7 * tw + 0.3 * c.temperature_2m) * 10) / 10;
+    const lv = wbgtLevel(wbgt);
+
+    // 時間別WBGT（8時間分）
+    const wbgtHourSlots = [];
+    for (let i = 0; i <= 8; i++) {
+      const idx = hIdx + i;
+      if (idx >= hourlyTimes.length) break;
+      const t = new Date(hourlyTimes[idx]);
+      const tw_h = d.hourly.wet_bulb_temperature_2m[idx]
+        ?? stullWetBulb(d.hourly.temperature_2m[idx], c.relative_humidity_2m);
+      const wbgt_h = Math.round((0.7 * tw_h + 0.3 * d.hourly.temperature_2m[idx]) * 10) / 10;
+      const lv_h = wbgtLevel(wbgt_h);
+      wbgtHourSlots.push(`
+        <div class="wg-hour ${i===0?'now':''}">
+          <div class="wg-h-time">${i===0?'今':t.getHours()+'時'}</div>
+          <div class="wg-h-icon" style="font-size:1rem">${wbgt_h}°</div>
+          <div class="wg-h-temp ${lv_h.cls}" style="font-size:.7rem">${lv_h.label}</div>
+        </div>`);
+    }
+
+    const wbgtEl = document.getElementById('wg-wbgt');
+    if (wbgtEl) {
+      wbgtEl.innerHTML = `
+        <div class="wg-lbl">🌡 暑さ指数 WBGT（推定）</div>
+        <div class="wg-val ${lv.cls}">${wbgt}°</div>
+        <div class="wg-sub ${lv.cls}">${lv.label}</div>
+        <div class="wg-detail">${lv.advice}</div>
+        <div class="wg-hourly">${wbgtHourSlots.join('')}</div>`;
+    }
+
+    el.innerHTML = `
+      <div class="wg-lbl">🌤 天気 — 横浜市青葉区<span class="wg-updated"></span></div>
+      <div class="wg-val">${icon} ${c.temperature_2m}°C</div>
+      <div class="wg-sub">${desc} &nbsp;／&nbsp; 体感 ${c.apparent_temperature}°C</div>
+      <div class="wg-detail">💧 ${c.relative_humidity_2m}% &nbsp; 🌬 ${windDir} ${c.wind_speed_10m}m/s &nbsp; 🌧 ${c.precipitation}mm</div>
+      <div class="wg-hourly">${hourSlots.join('')}</div>`;
+    stampUpdated('wg-weather');
+    stampUpdated('wg-wbgt');
+  } catch {
+    el.innerHTML = `<div class="wg-lbl">🌤 天気 — 横浜市青葉区</div><div class="wg-err">取得できませんでした</div>`;
+  }
+}
+
+
+
+function stullWetBulb(t, rh) {
+  return t * Math.atan(0.151977 * Math.sqrt(rh + 8.313659))
+    + Math.atan(t + rh) - Math.atan(rh - 1.676331)
+    + 0.00391838 * Math.pow(rh, 1.5) * Math.atan(0.023101 * rh) - 4.686035;
+}
+function wbgtLevel(w) {
+  if (w >= 31) return {label:'運動中止', cls:'c-stop',   advice:'⛔ 原則すべての運動を中止'};
+  if (w >= 28) return {label:'厳重警戒', cls:'c-danger', advice:'🔴 激しい運動・長時間の屋外活動は中止'};
+  if (w >= 25) return {label:'警戒',     cls:'c-warn',   advice:'🟠 積極的に休憩・水分補給を'};
+  if (w >= 21) return {label:'注意',     cls:'c-caution',advice:'🟡 こまめな水分補給を'};
+  return             {label:'ほぼ安全', cls:'c-safe',   advice:'🟢 通常通り実施可能'};
+}
+
+// 気象庁 警報コード → 名称マッピング
+const WARN_NAMES = {
+  '01':'暴風雪警報','02':'大雪警報','03':'暴風警報','04':'波浪警報','05':'高潮警報',
+  '10':'大雨警報','12':'大雨警報','13':'大雨警報','14':'雷注意報','15':'強風注意報',
+  '16':'波浪注意報','17':'濃霧注意報','18':'雷注意報','19':'風雪注意報','20':'大雪注意報',
+  '21':'乾燥注意報','22':'なだれ注意報','23':'低温注意報','24':'霜注意報',
+  '25':'着氷注意報','26':'着雪注意報','27':'高潮注意報','28':'大雨注意報',
+  '29':'洪水注意報','30':'融雪注意報','31':'洪水警報',
+  '32':'大雨特別警報','33':'暴風特別警報','35':'高潮特別警報',
+  '36':'波浪特別警報','37':'大雪特別警報','38':'暴風雪特別警報',
+};
+// 特別警報コード
+const TOKUBETSU = new Set(['32','33','35','36','37','38']);
+// 警報コード（特別以外）
+const KEIHO = new Set(['01','02','03','04','05','10','12','13','31']);
+
+async function fetchWarnings() {
+  const JMA_URL = 'https://www.jma.go.jp/bosai/warning/data/warning/140000.json';
+  const el = document.getElementById('wg-alert');
+  try {
+    const res = await Promise.race([
+      fetch(JMA_URL),
+      new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 8000))
+    ]);
+    const data = await res.json();
+
+    // 横浜市 code=1410000 を探す
+    let areaWarnings = null;
+    outer: for (const areaType of data.areaTypes || []) {
+      for (const area of areaType.areas || []) {
+        if (area.code === '1410000') { areaWarnings = area.warnings || []; break outer; }
+      }
+    }
+
+    if (!areaWarnings) {
+      el.innerHTML = '<div class="wg-lbl">🚨 気象警報・注意報 — 横浜市</div><div class="wg-val">取得エラー</div>';
+      return;
+    }
+
+    const active = areaWarnings.filter(w =>
+      w.status !== '発表警報・注意報はなし' && w.status !== '解除' && w.code
+    );
+
+    if (!active.length) {
+      el.innerHTML = `
+        <div class="wg-lbl">🚨 気象警報・注意報 — 横浜市<span class="wg-updated"></span></div>
+        <div class="wg-val" style="color:#22c55e;font-size:1.1rem">発令なし</div>
+        <div class="wg-sub">現在、警報・注意報は発令されていません</div>`;
+      stampUpdated('wg-alert');
+      return;
+    }
+
+    const names = [...new Set(active.map(w => WARN_NAMES[w.code] || `コード${w.code}`))];
+    const codes = active.map(w => w.code);
+    const hasTokubetsu = codes.some(c => TOKUBETSU.has(c));
+    const hasKeiho     = codes.some(c => KEIHO.has(c));
+    const color = hasTokubetsu ? '#ef4444' : hasKeiho ? '#f87171' : '#fbbf24';
+    const label = hasTokubetsu ? '特別警報 発令中' : hasKeiho ? '警報 発令中' : '注意報 発令中';
+
+    el.style.borderColor = color.replace(')',', .4)').replace('rgb','rgba');
+    el.innerHTML = `
+      <div class="wg-lbl">🚨 気象警報・注意報 — 横浜市<span class="wg-updated"></span></div>
+      <div class="wg-val" style="color:${color}">${label}</div>
+      <div class="wg-sub">${names.join('　・　')}</div>`;
+    stampUpdated('wg-alert');
+  } catch(e) {
+    el.innerHTML = '<div class="wg-lbl">🚨 気象警報・注意報 — 横浜市</div><div class="wg-sub" style="color:#60748a">取得失敗</div>';
+  }
+}
+
+async function fetchInfection() {
+  const el = document.getElementById('wg-infection');
+  try {
+    const rssUrl = 'https://www.niid.go.jp/niid/index.php?format=feed&type=rss';
+    const res = await timedFetch(proxy(rssUrl));
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text, 'text/xml');
+    const item = xml.querySelector('item');
+    if (!item) throw new Error('no items');
+    const title = item.querySelector('title')?.textContent?.trim() || '';
+    const link  = item.querySelector('link')?.textContent?.trim()  || '#';
+    const pub   = item.querySelector('pubDate')?.textContent || '';
+    const date  = pub ? new Date(pub).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'}) : '';
+    el.innerHTML = `
+      <div class="wg-lbl">🦠 感染症情報（NIID）</div>
+      <div class="wg-sub" style="font-size:.8rem;color:#f0f4ff;line-height:1.5;white-space:normal">${title.length>28?title.substring(0,28)+'…':title}</div>
+      <div class="wg-detail">${date}</div>
+      <div class="wg-detail"><a href="${link}" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:none">詳細を見る →</a></div>`;
+  } catch {
+    el.innerHTML = `<div class="wg-lbl">🦠 感染症情報（NIID）</div><div class="wg-err">取得できませんでした</div>`;
+  }
+}
+
+// ========== CLOCK ==========
+const WEEKDAYS = ['日','月','火','水','木','金','土'];
+function updateClock() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const mo = now.getMonth() + 1;
+  const d = now.getDate();
+  const w = WEEKDAYS[now.getDay()];
+  const h = String(now.getHours()).padStart(2,'0');
+  const mi = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('lp-clock').innerHTML =
+    `<span class="lp-clock-date">${y}年${mo}月${d}日（${w}）</span>`+
+    `<span class="lp-clock-time">${h}:${mi}:${s}</span>`;
+}
+function updateCountdown() {
+  const now = new Date();
+  const el = document.getElementById('lp-countdown');
+  const dow = now.getDay();
+  if (dow === 0 || dow === 6) { el.className = 'lp-countdown'; el.innerHTML = ''; return; }
+  const start = new Date(now); start.setHours(8, 15, 0, 0);
+  const end   = new Date(now); end.setHours(16, 45, 0, 0);
+  function fmt(ms) {
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    return `<span class="lp-countdown-time">${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`;
+  }
+  if (now >= end) {
+    el.className = 'lp-countdown done';
+    el.innerHTML = '🎉 お疲れ様でした';
+  } else if (now >= start) {
+    el.className = 'lp-countdown working';
+    el.innerHTML = `退勤まで&nbsp;${fmt(end - now)}`;
+  } else {
+    el.className = 'lp-countdown before';
+    el.innerHTML = `勤務開始まで&nbsp;${fmt(start - now)}`;
+  }
+}
+
+// ========== PERIOD ==========
+const PERIODS = {
+  MON_FRI: [
+    [8,25, 9,10,'1時間目'],[9,10, 9,55,'2時間目'],[9,55,10,40,'3時間目'],
+    [10,40,11, 0,'中休み'],[11, 0,11,45,'4時間目'],[11,45,12,30,'5時間目'],
+    [12,30,13,15,'給食'],[13,15,13,35,'掃除'],[13,35,13,50,'スキルタイム'],
+  ],
+  WED: [
+    [8,25, 9,10,'1時間目'],[9,10, 9,55,'2時間目'],[9,55,10,40,'3時間目'],
+    [10,40,11, 0,'中休み'],[11, 0,11,45,'4時間目'],[11,45,12,30,'5時間目'],
+    [12,30,13,15,'給食'],[13,15,13,35,'掃除'],
+  ],
+  TUE_THU: [
+    [8,25, 9,10,'1時間目'],[9,10, 9,55,'2時間目'],[9,55,10,40,'3時間目'],
+    [10,40,11, 0,'中休み'],[11, 0,11,45,'4時間目'],[11,45,12,30,'5時間目'],
+    [12,30,13,15,'給食'],[13,15,13,35,'掃除'],[13,35,13,50,'昼休み'],
+    [13,50,14,35,'6時間目'],
+  ],
+};
+function getPeriodSchedule(dow) {
+  if (dow===1||dow===5) return PERIODS.MON_FRI;
+  if (dow===3) return PERIODS.WED;
+  if (dow===2||dow===4) return PERIODS.TUE_THU;
+  return null;
+}
+function updatePeriod() {
+  const now = new Date();
+  const el = document.getElementById('lp-period');
+  const sched = getPeriodSchedule(now.getDay());
+  if (!sched) { el.className='lp-period'; return; }
+  const hm = now.getHours()*60 + now.getMinutes();
+  const found = sched.find(([sh,sm,eh,em])=> hm>=sh*60+sm && hm<eh*60+em);
+  if (found) {
+    el.className = 'lp-period active';
+    el.innerHTML = `現在&nbsp;<span class="lp-period-label">${found[4]}</span>`;
+  } else {
+    el.className = 'lp-period';
+  }
+}
+
+updateClock();
+updateCountdown();
+updatePeriod();
+setInterval(() => { updateClock(); updateCountdown(); updatePeriod(); }, 1000);
+
+function stampUpdated(id) {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const el = document.querySelector(`#${id} .wg-updated`);
+  if (el) el.textContent = `更新 ${hh}:${mm}`;
+}
+
+fetchWeather(); // WBGTも内部で処理
+fetchWarnings();
+setInterval(fetchWeather,  30 * 60 * 1000); // 30分ごと
+setInterval(fetchWarnings, 10 * 60 * 1000); // 10分ごと
+
+// ========== ROUTE SEARCH ==========
+const SCHOOL_ADDR = '横浜市青葉区荏田西4-5-1 荏田西小学校';
+let selectedMode = 'driving';
+let schoolIsOrigin = false; // false=学校が目的地、true=学校が出発地
+
+document.querySelectorAll('.route-mode').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.route-mode').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode = btn.dataset.mode;
+  });
+});
+
+document.getElementById('route-other')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') openRoute();
+});
+
+function swapRoute() {
+  schoolIsOrigin = !schoolIsOrigin;
+  const label = document.getElementById('route-direction-label');
+  const input = document.getElementById('route-other');
+  if (schoolIsOrigin) {
+    label.textContent = '🏫 学校 → 📍 入力地点';
+    input.placeholder = '目的地を入力（例: 青葉台駅）';
+  } else {
+    label.textContent = '📍 入力地点 → 🏫 学校';
+    input.placeholder = '出発地を入力（例: 青葉台駅）';
+  }
+}
+
+function openRoute() {
+  const other = document.getElementById('route-other').value.trim();
+  if (!other) { document.getElementById('route-other').focus(); return; }
+  const origin = schoolIsOrigin ? SCHOOL_ADDR : other;
+  const dest   = schoolIsOrigin ? other : SCHOOL_ADDR;
+  const url = `https://www.google.com/maps/dir/?api=1`
+    + `&origin=${encodeURIComponent(origin)}`
+    + `&destination=${encodeURIComponent(dest)}`
+    + `&travelmode=${selectedMode}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+// ========== PAGE TRANSITION ==========
+
+// Page transition
+let busy = false;
+function navigate(fromId, toId) {
+  if (busy) return; busy = true;
+  const from = document.getElementById(fromId);
+  const to   = document.getElementById(toId);
+  to.scrollTop = 0;
+  from.className = 'page exit';
+  to.className   = 'page active';
+  setTimeout(() => { from.className = 'page'; busy = false; }, 500);
+}
+</script>
 </body>
 </html>
