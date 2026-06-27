@@ -674,41 +674,57 @@ html,body{width:100%;height:100%;overflow:hidden;
 <script>
 // ===== CATS START =====
 const CATS = [
-  {icon:'layout-grid', name:'■ 列の説明', color:'tg-blue', count:1, links:[
-    {name:'', url:'#', img:'icons/row3.png', desc:'', domain:''},
+  {icon:'book-open', name:'学習管理', color:'tg-blue', count:5, links:[
+    {name:'ロイロノート', url:'https://loilonote.app/login?hl=ja-JP', img:'icons/row2.png', desc:'', domain:'loilonote.app'},
+    {name:'Google Classroom', url:'https://classroom.google.com/', img:'icons/row3.png', desc:'', domain:'classroom.google.com'},
+    {name:'L-gate', url:'https://yokohama-edu.l-gate.net/', img:'icons/row4.png', desc:'', domain:'yokohama-edu.l-gate.net'},
+    {name:'Monoxer管理画面', url:'https://monoxer.com/login', img:'icons/row5.png', desc:'', domain:'monoxer.com'},
+    {name:'Canva', url:'https://www.canva.com/', img:'icons/row6.png', desc:'', domain:'canva.com'},
   ]},
-  {icon:'bookmark', name:'A列 (カテゴリ)', color:'tg-green', count:1, links:[
-    {name:'学習管理 / 児童管理 / デジタル教科書 / YCAN / その他リンク  のいずれかを入力', url:'#', img:'icons/row4.png', desc:'', domain:''},
+  {icon:'users', name:'児童管理', color:'tg-green', count:3, links:[
+    {name:'校務システム', url:'https://eschool.office.ycan/loginNow.do', img:null, desc:'学校基本情報管理システム', domain:'eschool.office.ycan'},
+    {name:'すぐーる', url:'https://sughool.jp/ctrl/yokohama-sch/c', img:'icons/row8.png', desc:'', domain:'sughool.jp'},
+    {name:'横浜St☆dyNavi', url:'https://study-navi.edu.city.yokohama.jp/teachers/home', img:'icons/row9.png', desc:'', domain:'study-navi.edu.city.yokohama.jp'},
   ]},
-  {icon:'star', name:'B列 (サービス名)', color:'tg-purple', count:1, links:[
-    {name:'ポータルに表示するサービスの名前', url:'#', img:'icons/row5.png', desc:'', domain:''},
+  {icon:'monitor', name:'デジタル教科書', color:'tg-purple', count:6, links:[
+    {name:'まなビューア', url:'https://manaviewer.jp/', img:'icons/row10.jpeg', desc:'国語・外国語・生活', domain:'manaviewer.jp'},
+    {name:'Lentrance', url:'https://www.lentrance.com/', img:'icons/row11.png', desc:'算数・理科・保健', domain:'lentrance.com'},
+    {name:'みらいスクールプラットフォーム', url:'https://mirai-pf.jp/user/login.html', img:'icons/row12.png', desc:'社会・家庭', domain:'mirai-pf.jp'},
+    {name:'教育出版', url:'https://d-support.kyoiku-shuppan.co.jp/dk/r6e/teacher.php', img:'icons/row13.png', desc:'道徳・音楽', domain:'d-support.kyoiku-shuppan.co.jp'},
+    {name:'デジタル教科書ID一覧表', url:'https://docs.google.com/spreadsheets/d/11GfoSJRXT-MHWPGXYSvHym5WzGsMN9plL8rt4h9PTKM/edit', img:null, desc:'各社のID・パスワードが見れます。', domain:'docs.google.com'},
+    {name:'年間指導計画 検索・閲覧', url:'https://y05187773-ai.github.io/nenkei-keikaku/', img:null, desc:'各社の年間指導計画例を閲覧できます。', domain:'y05187773-ai.github.io'},
   ]},
-  {icon:'tag', name:'C列 (URL)', color:'tg-slate', count:1, links:[
-    {name:'クリック時に開くURL（https://... から始まるもの）', url:'#', img:'icons/row6.png', desc:'', domain:''},
+  {icon:'folder-open', name:'校務管理', color:'tg-slate', count:6, links:[
+    {name:'ミライム', url:'https://y.milim.jp/yokohama/', img:'icons/row16.png', desc:'', domain:'y.milim.jp'},
+    {name:'校務システム', url:'https://eschool.office.ycan/loginNow.do', img:null, desc:'学校基本情報管理システム', domain:'eschool.office.ycan'},
+    {name:'YCAN（外部）', url:'https://ycan.city.yokohama.lg.jp/index.html', img:null, desc:'', domain:'ycan.city.yokohama.lg.jp'},
+    {name:'学校便利帳', url:'http://ky-benricho.office.ycan/yc/menu.php', img:null, desc:'', domain:'ky-benricho.office.ycan'},
+    {name:'庶務事務システム', url:'https://ky-shomu.office.ycan/SMART_SHOMU/start.do?screenSize=0', img:null, desc:'', domain:'ky-shomu.office.ycan'},
+    {name:'資産管理システム', url:'https://ysam.office.ycan/ysam/', img:null, desc:'', domain:'ysam.office.ycan'},
   ]},
-  {icon:'lightbulb', name:'D列 (説明)', color:'tg-amber', count:1, links:[
-    {name:'カードに表示する短い説明文（省略可）', url:'#', img:null, desc:'', domain:''},
+  {icon:'sparkles', name:'生成AI', color:'tg-amber', count:2, links:[
+    {name:'Gemini', url:'https://gemini.google.com/app?hl=ja', img:'icons/row22.png', desc:'', domain:'gemini.google.com'},
+    {name:'Notebook LM', url:'https://notebooklm.google.com/', img:'icons/row23.png', desc:'', domain:'notebooklm.google.com'},
   ]},
-  {icon:'target', name:'E列 (アイコン)', color:'tg-teal', count:1, links:[
-    {name:'3通りの方法でアイコンを設定できます（下記参照）', url:'#', img:'icons/row8.png', desc:'', domain:''},
+  {icon:'clipboard-list', name:'研修管理', color:'tg-teal', count:1, links:[
+    {name:'Plant', url:'http://plant.nits.go.jp/', img:'icons/row24.png', desc:'全国教員研修プラットフォーム', domain:'plant.nits.go.jp'},
   ]},
-  {icon:'zap', name:'■ アイコンの設定方法（E列）', color:'tg-rose', count:1, links:[
-    {name:'', url:'#', img:'icons/row10.jpeg', desc:'', domain:''},
+  {icon:'pencil-ruler', name:'授業準備・教材作成', color:'tg-rose', count:9, links:[
+    {name:'ちびむすドリル', url:'https://happylilac.net/mu-s/', img:'icons/row25.png', desc:'', domain:'happylilac.net'},
+    {name:'ぷりんときっず', url:'https://print-kids.net/', img:null, desc:'', domain:'print-kids.net'},
+    {name:'かわいいフリー素材集 いらすとや', url:'https://www.irasutoya.com/', img:'icons/row27.jpeg', desc:'', domain:'irasutoya.com'},
+    {name:'NHK for School', url:'https://www.nhk.or.jp/school/', img:'icons/row28.jpeg', desc:'', domain:'nhk.or.jp'},
+    {name:'Kahoot!（カフート）', url:'https://kahoot.com/ja/', img:'icons/row29.png', desc:'', domain:'kahoot.com'},
+    {name:'Quizizz（クイジズ）', url:'https://wayground.com/?lng=ja', img:'icons/row30.png', desc:'', domain:'wayground.com'},
+    {name:'スポーツ庁　小学校体育指導の手引', url:'https://www.mext.go.jp/sports/b_menu/sports/mcatetop04/list/jsa_00003.htm#14', img:'icons/row31.png', desc:'', domain:'mext.go.jp'},
+    {name:'AIテキストマイニング', url:'https://textmining.userlocal.jp/', img:'icons/row32.png', desc:'', domain:'textmining.userlocal.jp'},
+    {name:'器械運動動画集', url:'https://script.google.com/a/macros/edu.city.yokohama.jp/s/AKfycbwGnzAij-HrqohuwKFdA7FEiEiY89JRYjCaCFY0ZRAFZLAhBnbLao9fKvNQna18ucdaQg/exec', img:'icons/row33.png', desc:'', domain:'script.google.com'},
   ]},
-  {icon:'globe', name:'方法1: セルに画像を挿入', color:'tg-indigo', count:1, links:[
-    {name:'Excelの「挿入」→「画像」からセルに画像を入れる → build.pyが自動抽出します', url:'#', img:'icons/row11.png', desc:'', domain:''},
-  ]},
-  {icon:'layout-grid', name:'方法2: 絵文字を入力', color:'tg-blue', count:1, links:[
-    {name:'📚 📝 📋 などの絵文字をそのままセルに入力', url:'#', img:'icons/row12.png', desc:'', domain:''},
-  ]},
-  {icon:'bookmark', name:'方法3: 画像URLを入力', color:'tg-green', count:1, links:[
-    {name:'https://example.com/icon.png のような画像のURLを入力', url:'#', img:'icons/row13.png', desc:'', domain:''},
-  ]},
-  {icon:'star', name:'（省略）', color:'tg-purple', count:1, links:[
-    {name:'E列を空白のままにすると、カテゴリのデフォルト絵文字が使われます', url:'#', img:null, desc:'', domain:''},
-  ]},
-  {icon:'tag', name:'■ 実行方法', color:'tg-slate', count:1, links:[
-    {name:'', url:'#', img:'icons/row16.png', desc:'', domain:''},
+  {icon:'wrench', name:'便利ツール', color:'tg-indigo', count:4, links:[
+    {name:'I Love PDF', url:'https://www.ilovepdf.com/ja', img:'icons/row34.png', desc:'', domain:'ilovepdf.com'},
+    {name:'I Love IMG', url:'https://www.iloveimg.com/ja', img:'icons/row35.jpeg', desc:'', domain:'iloveimg.com'},
+    {name:'GIGAファイル便', url:'https://gigafile.nu/', img:'icons/row36.png', desc:'', domain:'gigafile.nu'},
+    {name:'環境省熱中症予防サイト', url:'https://www.wbgt.env.go.jp/sp/graph_ref_td.php?region=03&prefecture=46&point=46106', img:'icons/row37.png', desc:'', domain:'wbgt.env.go.jp'},
   ]},
 ];
 // ===== CATS END =====
