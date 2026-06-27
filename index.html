@@ -35,7 +35,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 #intro{
   display:flex;flex-direction:column;
   background:#05091a;
-  position:relative;overflow:hidden;
   overflow-y:auto;
 }
 
@@ -673,60 +672,46 @@ html,body{width:100%;height:100%;overflow:hidden;
 </div><!-- #app -->
 
 <script>
+// ===== CATS START =====
 const CATS = [
-  {icon:'book-open', name:'学習管理',           color:'tg-blue',   count:5, links:[
-    {name:'ロイロノート',                url:'https://loilonote.app/login?hl=ja-JP',                        img:'icons/row2.png',   desc:'カードで思考を整理するタブレット授業支援ツール。授業の流れをビジュアルに設計できる。',         domain:'loilonote.app'},
-    {name:'Google Classroom',           url:'https://classroom.google.com/',                               img:'icons/row3.png',   desc:'課題の配布・提出・採点・フィードバックを一元管理。Googleドライブと連携。',                    domain:'classroom.google.com'},
-    {name:'L-gate',                     url:'https://yokohama-edu.l-gate.net/',                            img:'icons/row4.png',   desc:'横浜市教育ICTプラットフォーム。各種デジタルツールへのアクセス窓口。',                          domain:'l-gate.net'},
-    {name:'Monoxer管理画面',            url:'https://monoxer.com/login',                                   img:'icons/row5.png',   desc:'AIが記憶の定着をサポートする個別最適化学習ツール。教師用管理画面。',                            domain:'monoxer.com'},
-    {name:'Canva',                      url:'https://www.canva.com/',                                      img:'icons/row6.png',   desc:'豊富なテンプレートから素早く教材・掲示物をデザイン。教育機関は無料。',                          domain:'canva.com'},
+  {icon:'layout-grid', name:'■ 列の説明', color:'tg-blue', count:1, links:[
+    {name:'', url:'#', img:'icons/row3.png', desc:'', domain:''},
   ]},
-  {icon:'users', name:'児童管理',           color:'tg-green',  count:3, links:[
-    {name:'校務システム',                url:'https://eschool.office.ycan/loginNow.do',                     img:null,               desc:'横浜市学校内部向け校務支援システム（YCAN内アクセス専用）。',                                    domain:'office.ycan'},
-    {name:'すぐーる',                   url:'https://sughool.jp/ctrl/yokohama-sch/c',                       img:'icons/row8.png',   desc:'保護者への一斉連絡・欠席連絡・アンケートをスマホから簡単操作。',                                domain:'sughool.jp'},
-    {name:'横浜St☆dyNavi',             url:'https://study-navi.edu.city.yokohama.jp/teachers/home',        img:'icons/row9.png',   desc:'横浜市の学習支援ナビゲーション。家庭学習・授業準備に活用。',                                    domain:'edu.city.yokohama.jp'},
+  {icon:'bookmark', name:'A列 (カテゴリ)', color:'tg-green', count:1, links:[
+    {name:'学習管理 / 児童管理 / デジタル教科書 / YCAN / その他リンク  のいずれかを入力', url:'#', img:'icons/row4.png', desc:'', domain:''},
   ]},
-  {icon:'monitor', name:'デジタル教科書',     color:'tg-purple', count:6, links:[
-    {name:'まなビューア',               url:'https://manaviewer.jp/',                                       img:'icons/row10.jpeg', desc:'デジタル教科書閲覧プラットフォーム。複数教科書を一括管理。',                                    domain:'manaviewer.jp'},
-    {name:'Lentrance',                  url:'https://www.lentrance.com/',                                  img:'icons/row11.png',  desc:'デジタル教科書・教材の流通プラットフォーム。IDで各社コンテンツにアクセス。',                     domain:'lentrance.com'},
-    {name:'みらいスクールプラットフォーム', url:'https://mirai-pf.jp/user/login.html',                     img:'icons/row12.png',  desc:'クラウド型教育プラットフォーム。授業支援・学習管理を統合。',                                    domain:'mirai-pf.jp'},
-    {name:'教育出版',                   url:'https://d-support.kyoiku-shuppan.co.jp/dk/r6e/teacher.php',   img:'icons/row13.png',  desc:'教育出版のデジタル教科書・指導書・授業サポート資料。',                                          domain:'kyoiku-shuppan.co.jp'},
-    {name:'デジタル教科書ID一覧表',     url:'https://docs.google.com/spreadsheets/d/11GfoSJRXT-MHWPGXYSvHym5WzGsMN9plL8rt4h9PTKM/edit', img:null, desc:'各教科のデジタル教科書ログインIDをまとめた一覧表（Googleスプレッドシート）。', domain:'docs.google.com'},
-    {name:'年間指導計画 検索・閲覧',    url:'https://y05187773-ai.github.io/nenkei-keikaku/',              img:null,               desc:'年間指導計画を単元・教科別に検索・閲覧できるツール。',                                          domain:'github.io'},
+  {icon:'star', name:'B列 (サービス名)', color:'tg-purple', count:1, links:[
+    {name:'ポータルに表示するサービスの名前', url:'#', img:'icons/row5.png', desc:'', domain:''},
   ]},
-  {icon:'folder-open', name:'校務管理',           color:'tg-slate',  count:6, links:[
-    {name:'ミライム',                   url:'https://y.milim.jp/yokohama/',                                img:'icons/row16.png',  desc:'横浜市の校務・ICT支援システム。各種申請・書類管理に対応。',                                    domain:'milim.jp'},
-    {name:'校務システム',               url:'https://eschool.office.ycan/loginNow.do',                     img:null,               desc:'横浜市学校内部向け校務支援システム（YCAN内アクセス専用）。',                                    domain:'office.ycan'},
-    {name:'YCAN（外部）',              url:'https://ycan.city.yokohama.lg.jp/index.html',                  img:null,               desc:'横浜市教職員向けネットワーク。外部からのメール・連絡確認に。',                                  domain:'ycan.city.yokohama.lg.jp'},
-    {name:'学校便利帳',                url:'http://ky-benricho.office.ycan/yc/menu.php',                   img:null,               desc:'横浜市立学校向けの各種書式・マニュアルをまとめた便利帳。',                                      domain:'office.ycan'},
-    {name:'庶務事務システム',           url:'https://ky-shomu.office.ycan/SMART_SHOMU/start.do',           img:null,               desc:'横浜市教職員の給与・旅費・各種申請を処理する庶務事務システム。',                                domain:'office.ycan'},
-    {name:'資産管理システム',           url:'https://ysam.office.ycan/ysam/',                              img:null,               desc:'学校備品・ICT機器の資産管理システム。台帳管理・廃棄申請に。',                                  domain:'office.ycan'},
+  {icon:'tag', name:'C列 (URL)', color:'tg-slate', count:1, links:[
+    {name:'クリック時に開くURL（https://... から始まるもの）', url:'#', img:'icons/row6.png', desc:'', domain:''},
   ]},
-  {icon:'sparkles', name:'生成AI',             color:'tg-amber',  count:2, links:[
-    {name:'Gemini',                     url:'https://gemini.google.com/app?hl=ja',                         img:'icons/row22.png',  desc:'GoogleのAI。教材作成・調査・アイデア出しを自然な対話でサポート。',                              domain:'gemini.google.com'},
-    {name:'Notebook LM',                url:'https://notebooklm.google.com/',                              img:'icons/row23.png',  desc:'資料をアップロードしてAIに質問・要約させられるリサーチツール。',                                domain:'notebooklm.google.com'},
+  {icon:'lightbulb', name:'D列 (説明)', color:'tg-amber', count:1, links:[
+    {name:'カードに表示する短い説明文（省略可）', url:'#', img:null, desc:'', domain:''},
   ]},
-  {icon:'clipboard-list', name:'研修管理',           color:'tg-teal',   count:1, links:[
-    {name:'Plant',                      url:'http://plant.nits.go.jp/',                                    img:'icons/row24.png',  desc:'教職員等中央研修の申込・受講・証明書発行システム（国立教育政策研究所）。',                      domain:'plant.nits.go.jp'},
+  {icon:'target', name:'E列 (アイコン)', color:'tg-teal', count:1, links:[
+    {name:'3通りの方法でアイコンを設定できます（下記参照）', url:'#', img:'icons/row8.png', desc:'', domain:''},
   ]},
-  {icon:'pencil-ruler', name:'授業準備・教材作成', color:'tg-rose',   count:9, links:[
-    {name:'ちびむすドリル',             url:'https://happylilac.net/mu-s/',                                img:'icons/row25.png',  desc:'小学生向けの無料プリント・ドリル教材。国語・算数・英語など各教科対応。',                        domain:'happylilac.net'},
-    {name:'ぷりんときっず',             url:'https://print-kids.net/',                                     img:null,               desc:'子ども向け無料プリント素材。知育・学習・ぬりえなど幅広いジャンル。',                            domain:'print-kids.net'},
-    {name:'いらすとや',                url:'https://www.irasutoya.com/',                                   img:'icons/row27.jpeg', desc:'授業の資料や掲示物で使えるフリーイラスト素材集。日本最大級の無料素材サイト。',                  domain:'irasutoya.com'},
-    {name:'NHK for School',             url:'https://www.nhk.or.jp/school/',                               img:'icons/row28.jpeg', desc:'各教科・単元に対応した授業動画ライブラリ。NHK制作の高品質な教育コンテンツ。',                  domain:'nhk.or.jp'},
-    {name:'Kahoot!（カフート）',        url:'https://kahoot.com/ja/',                                      img:'icons/row29.png',  desc:'ゲーム感覚のクイズで授業参加率アップ。スマホ・タブレットで即座に参加できる。',                  domain:'kahoot.com'},
-    {name:'Quizizz（クイジズ）',        url:'https://wayground.com/?lng=ja',                               img:'icons/row30.png',  desc:'自分のペースで取り組める個別最適化クイズ学習ツール。宿題・復習にも。',                          domain:'wayground.com'},
-    {name:'スポーツ庁 体育指導の手引', url:'https://www.mext.go.jp/sports/b_menu/sports/mcatetop04/list/jsa_00003.htm#14', img:'icons/row31.png', desc:'小学校体育の授業設計に役立つスポーツ庁公式指導資料。',  domain:'mext.go.jp'},
-    {name:'AIテキストマイニング',       url:'https://textmining.userlocal.jp/',                            img:'icons/row32.png',  desc:'文章を貼り付けるだけでキーワード分析・ワードクラウドを生成。アンケート集計に最適。',            domain:'textmining.userlocal.jp'},
-    {name:'器械運動動画集',             url:'https://script.google.com/a/macros/edu.city.yokohama.jp/s/AKfycbwGnzAij-HrqohuwKFdA7FEiEiY89JRYjCaCFY0ZRAFZLAhBnbLao9fKvNQna18ucdaQg/exec', img:'icons/row33.png', desc:'横浜市作成の器械運動（跳び箱・鉄棒・マット）授業動画集。', domain:'edu.city.yokohama.jp'},
+  {icon:'zap', name:'■ アイコンの設定方法（E列）', color:'tg-rose', count:1, links:[
+    {name:'', url:'#', img:'icons/row10.jpeg', desc:'', domain:''},
   ]},
-  {icon:'wrench', name:'便利ツール',         color:'tg-indigo', count:4, links:[
-    {name:'I Love PDF',                 url:'https://www.ilovepdf.com/ja',                                 img:'icons/row34.png',  desc:'PDF結合・分割・圧縮・変換など各種PDF操作が無料でできるオンラインツール。',                     domain:'ilovepdf.com'},
-    {name:'I Love IMG',                 url:'https://www.iloveimg.com/ja',                                 img:'icons/row35.jpeg', desc:'画像のリサイズ・圧縮・切り抜き・変換などが無料でできるオンラインツール。',                    domain:'iloveimg.com'},
-    {name:'GIGAファイル便',             url:'https://gigafile.nu/',                                        img:'icons/row36.png',  desc:'大容量ファイルの送受信に。最大200GBまで無料・会員登録不要。',                                  domain:'gigafile.nu'},
-    {name:'環境省熱中症予防サイト',     url:'https://www.wbgt.env.go.jp/sp/graph_ref_td.php?region=03&prefecture=46&point=46106', img:'icons/row37.png', desc:'熱中症対策の暑さ指数（WBGT）をリアルタイム確認。体育・外遊びの可否判断に。', domain:'wbgt.env.go.jp'},
+  {icon:'globe', name:'方法1: セルに画像を挿入', color:'tg-indigo', count:1, links:[
+    {name:'Excelの「挿入」→「画像」からセルに画像を入れる → build.pyが自動抽出します', url:'#', img:'icons/row11.png', desc:'', domain:''},
+  ]},
+  {icon:'layout-grid', name:'方法2: 絵文字を入力', color:'tg-blue', count:1, links:[
+    {name:'📚 📝 📋 などの絵文字をそのままセルに入力', url:'#', img:'icons/row12.png', desc:'', domain:''},
+  ]},
+  {icon:'bookmark', name:'方法3: 画像URLを入力', color:'tg-green', count:1, links:[
+    {name:'https://example.com/icon.png のような画像のURLを入力', url:'#', img:'icons/row13.png', desc:'', domain:''},
+  ]},
+  {icon:'star', name:'（省略）', color:'tg-purple', count:1, links:[
+    {name:'E列を空白のままにすると、カテゴリのデフォルト絵文字が使われます', url:'#', img:null, desc:'', domain:''},
+  ]},
+  {icon:'tag', name:'■ 実行方法', color:'tg-slate', count:1, links:[
+    {name:'', url:'#', img:'icons/row16.png', desc:'', domain:''},
   ]},
 ];
+// ===== CATS END =====
 
 // アイコンHTMLを生成（画像 or イニシャル）
 function iconHTML(l) {
