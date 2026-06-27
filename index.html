@@ -562,6 +562,110 @@ html,body{width:100%;height:100%;overflow:hidden;
 .c-danger {color:#ef4444}
 .c-stop   {color:#dc2626;font-weight:900}
 .c-blue   {color:#60a5fa}
+
+/* ==============================
+   RESPONSIVE — MOBILE
+============================== */
+
+/* ── タブレット(〜768px) ── */
+@media (max-width:768px){
+  /* Nav */
+  .lp-nav{padding:12px 16px;gap:8px;flex-wrap:wrap}
+  .lp-nav-center{gap:10px}
+  .lp-clock-date{font-size:.88rem}
+  .lp-clock-time{font-size:1.15rem}
+  .lp-countdown{font-size:.62rem}
+  .lp-countdown-time{font-size:.85rem}
+  /* 住所・電話を非表示にし、学校名だけ残す */
+  .lp-school-meta{display:none}
+  .lp-school-info{
+    padding-left:12px;gap:0;
+    border-left:1px solid rgba(255,255,255,.08);
+  }
+  .lp-school-name{font-size:.9rem}
+  /* Hero */
+  .lp-hero{padding:24px 16px 24px}
+  /* ウィジェット: 1列化 */
+  .lp-widgets{
+    grid-template-columns:1fr;
+    grid-template-areas:"weather" "wbgt" "alert" "route";
+    gap:10px;
+    margin-top:16px;
+  }
+  /* CTAボタン */
+  .lp-btn-primary{padding:16px 36px;font-size:1rem}
+  /* カテゴリバー */
+  .cat-bar{padding:14px 16px}
+  .cat-bar-title{font-size:1rem}
+  /* リストバー */
+  .list-bar{padding:12px 14px}
+  /* リストカード */
+  .lk{padding:16px 16px;gap:14px}
+  .lk-icon{width:54px;height:54px;font-size:26px}
+  .list-wrap{padding:14px 14px 40px}
+  /* ルート検索 */
+  .route-row{gap:8px}
+  .route-direction{font-size:.72rem}
+  .route-mode{padding:6px 9px;font-size:.73rem}
+  .route-btn{padding:8px 14px;font-size:.8rem}
+}
+
+/* ── スマートフォン(〜480px) ── */
+@media (max-width:480px){
+  /* Nav: 住所・学校名を完全に非表示 */
+  .lp-school-info{display:none}
+  .lp-nav{padding:10px 14px}
+  .lp-nav-center{gap:8px}
+  .lp-clock{gap:6px}
+  .lp-clock-date{font-size:.8rem}
+  .lp-clock-time{font-size:1.05rem}
+  /* Hero */
+  .lp-hero{padding:20px 14px 20px}
+  .lp-h1{font-size:clamp(28px,8vw,48px)}
+  /* ウィジェット */
+  .lp-widgets{gap:8px;margin-top:12px}
+  .wg{padding:13px 14px}
+  /* CTAボタン: 全幅 */
+  .lp-cta{margin-top:16px}
+  .lp-btn-primary{width:100%;justify-content:center;padding:16px 24px;font-size:.95rem;border-radius:14px}
+  /* カテゴリグリッド: 1列固定 */
+  .cat-grid{
+    grid-template-columns:1fr;
+    padding:12px 12px 32px;gap:10px;
+  }
+  .tile{min-height:auto;padding:20px 18px}
+  .cat-bar{padding:12px 14px}
+  .cat-bar-sub{display:none}
+  /* リスト */
+  .list-wrap{padding:10px 12px 36px;gap:8px}
+  .lk{padding:14px 14px;gap:12px;border-radius:16px}
+  .lk-icon{width:48px;height:48px;font-size:22px;border-radius:14px}
+  .lk-name{font-size:.92rem;margin-bottom:4px}
+  .lk-desc{font-size:.75rem}
+  .lk-go{width:38px;height:38px;font-size:17px;border-radius:11px}
+  .list-bar{padding:10px 12px;gap:8px}
+  .list-cat-tag{padding:6px 12px}
+  .list-cat-tag .lct-name{font-size:.82rem}
+  /* ルート検索 */
+  .route-modes{gap:4px;flex-wrap:wrap}
+  .route-mode{padding:5px 8px;font-size:.68rem}
+  .route-input{font-size:.8rem;padding:8px 12px}
+  .route-btn{width:100%;text-align:center;padding:10px}
+  .route-direction,.route-swap{display:none}
+}
+
+/* タッチデバイスではホバーエフェクト無効化 */
+@media (hover:none){
+  .tile:hover{transform:none}
+  .lk:hover{transform:none;border-color:rgba(255,255,255,.07);box-shadow:none}
+  .lk:hover .lk-icon{transform:none;background:rgba(255,255,255,.07);box-shadow:none}
+  .lk:hover::after{transform:none;transition:none}
+  .lk:hover::before{transform:scaleY(0)}
+  .lk:hover .lk-go{background:rgba(59,130,246,.1);box-shadow:none;transform:none}
+  /* タップ時のフィードバック */
+  .lk:active{background:#1e3050;border-color:rgba(96,165,250,.3)}
+  .tile:active{opacity:.85}
+}
 </style>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
