@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-101383-6" type="text/javascript"></script>
+<script type="text/javascript">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-101383-6');
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1033985316"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-1033985316');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+<meta name="keywords" content="ミライム,グループウェア,学校,校務支援,教職員向け" />
+<meta name="description" content="教職員向け校務支援ツール『ミライム』 ミライムの利用により先生にゆとりの時間が生まれ子どもとふれあう時間が増えます。ミライムは先生の負担軽減や学校の働き方改革を応援します。" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<title>学校用グループウェア　ミライム</title>
+<link rel="stylesheet" href="css/top.css?v=200427">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/slicknav.css">
+<script src="//code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="js/rollover.js"></script>
+<script type="text/javascript" src="js/masonry.min.js"></script>
+<script type="text/javascript" src="js/jquery.slicknav.js"></script>
+<script type="text/javascript">
+   $(function(){
+        $('#menu').slicknav();
+    });
+jQuery.event.add(window, "load", function(){
+        $('#container').masonry({
+            itemSelector: '.box',
+            isAnimated: true,
+            isFitWidth: true,
+						columnWidth: 6,
+						isResizable: true
+        });
+}); 
+$(function($){
+    $('.box').hide();
+    $('.box').each(function (i) {
+        $(this).delay(i * 100).fadeIn(1000);
+    });
+    $('ul#menu li').hide();
+    $('ul#menu li').each(function (i) {
+        $(this).delay(i * 200).fadeIn(2000);
+    });
+    $('#footer').hide();
+    $('#footer').each(function (i) {
+        $(this).delay(i * 500).fadeIn(4000);
+    });
+});
+</script>
+</head>
+<body>
+
+<div id="wrap">
+<!-- /===== ヘッダー START =======/ -->
+<div id="header">
+	<h1><a href="index.html"><img src="img/tit_mainlogo.png" alt="学校用グループウェア　ミライム"/></a></h1>
+	<ul id="navi">
+		<li><a href="exp/demo.html"><img src="img/men_demo_off.gif" alt="デモサイト"/></a></li>
+		<li><a href="exp/dl.html"><img src="img/men_dl_off.gif" alt="資料ダウンロード"/></a></li>
+		<li><a href="exp/movie.html"><img src="img/men_movie_off.gif" alt="紹介MOVIE"/></a></li>
+	</ul>
+	<ul id="menu">
+		<li><a href="about/index.html"><img src="img/men_about_off.gif" alt="ミライムとは"/></a></li>
+		<li><a href="news/index.html"><img src="img/men_news_off.gif" alt="ミライムニュース"/></a></li>
+		<li><a href="cases/index.html"><img src="img/men_record_off.gif" alt="導入実績・活用事例"/></a></li>
+		<li><a href="plan/index.html"><img src="img/men_plan_off.gif" alt="導入方法と価格"/></a></li>
+		<li><a href="cloud/index.html"><img src="img/men_cloud_off.gif" alt="ミライムクラウド"/></a></li>
+		<li><a href="inquiry/index.html"><img src="img/men_inquiry_off.gif" alt="よくある質問"/></a></li>
+	</ul>
+</div>
+<!-- /===== ヘッダー END =======/ -->
+
+
+<!-- /===== コンテンツ START =======/ -->
+<div id="container">
+    <div class='box box03'><div style='border-radius:7px;background:white;text-align:center;'>
+        <a href='https://welcome-letter.milim.jp/' target='_blank'>
+	    <div style='display:block;padding:1em;text-align:center;'>
+                <img src='https://welcome-letter.milim.jp/assets/images/logo-letter-color.svg' />
+            </div>
+            <div style='padding:1em;background:#76bc2a;border-radius:0 0 7px 7px;color:white;font-weight:bold;'>
+                学校と保護者のための連絡ツール「ミライムレター」をリリースしました
+            </div>
+        </a>
+    </div></div>
+<!--
+    <div class='box box03'><div style='padding:1em;border-radius:7px;background:white;text-align:center;'>
+        <a href='img/2021covid19-3.pdf?20210801' target='_blank'>新型コロナウイルス感染症に対する当社の対応方針について(8/1更新)</a>
+    </div></div>
+    <div class='box box03'><div style='background:white;border-radius:7px;padding:1em;text-align:center;'>
+        <a href='javascript:void(0)'>サーバー版ミライムをご契約いただいているお客様へクラウド版無償提供のご案内</a>
+        <p style='padding:1em;font-size:0.85em;line-height:1.6;'>
+          新型コロナウイルス感染症の拡大防止に関するご支援として、現在クラウド以外の形態でご契約いただいている教育機関のお客様向けにクラウド環境を期間限定で無償提供いたします。
+	</p>
+        <p style='font-size:0.85em'>
+          <a href='inquiry/index.html'>詳細につきましては営業窓口までご連絡ください。</a>
+        </p>
+    </div></div>
+-->
+	<div class="box box01"><a href="about/index.html"><img src="img/top/img_about.png" alt="ミライムとは"/></a></div>
+	<div class="box box02"><a href="cases/index.html"><img src="img/top/img_record.png" alt="導入実績・実例"/></a></div>
+    <div class="box box02"><a href="plan/index.html"><img src="img/top/img_plan.png" alt="導入方法と価格"/></a></div>
+	<div class="box box02"><a href="cloud/index.html"><img src="img/top/img_cloud.png" alt="ミライムクラウド"/></a></div>
+    <div class="box box02"><a href="exp/demo.html"><img src="img/top/img_demo.png" alt="デモサイト"/></a></div>
+	<div class="box box01"><a href="inquiry/index.html"><img src="img/top/img_inquiry.png" alt="お問い合わせ"/></a></div>
+    <div class="box box02"><a href="news/index.html"><img src="img/top/img_activity.png" alt="ミライムの活動"/></a></div>
+	<div class="box box02"><a href="exp/dl.html"><img src="img/top/img_dl.png" alt="資料ダウンロード"/></a></div>
+	<div class="box box02"><a href="exp/movie.html"><img src="img/top/img_movie.png" alt="紹介MOVIE"/></a></div>
+	
+
+<!-- /===== フッター START =======/ -->
+	<div id="footer">
+		<ul>
+		<li><a href="company.html">会社概要</a></li>
+		<li><span>|</span></li>
+		<li><a href="sitemap.html">サイトマップ</a></li>
+		<li><span>|</span></li>
+		<li><a href="exp/faq.html">よくある質問</a></li>
+		<li><span>|</span></li>
+		<li><a href="privacy.html">プライバシーポリシー</a></li>
+		<li><span>|</span></li>
+		<li><a href="security.html">セキュリティーポリシー</a></li>
+		</ul>
+		<p>Copyright&copy; 2008-2025 milim. inc. All right reserved.</p>
+	</div>
+<!-- /===== フッター END =======/ -->
+</div>
+<!-- /===== コンテンツ END =======/ -->
+	<div class="back"><a href="#"><img src="img/btn_back.png" alt="TOPへ戻る"/></a></div>
+</div>
+
+</body>
+</html>
