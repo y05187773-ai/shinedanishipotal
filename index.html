@@ -7,6 +7,12 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2E6A57" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1C3B31" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="荏田西ポータル">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJ9LQB4X6B"></script>
 <script>
@@ -113,7 +119,7 @@ svg.lucide{width:1em;height:1em;stroke-width:2;flex-shrink:0}
 
 /* ===== Layout ===== */
 .info{max-width:1360px;margin:0 auto;padding:20px 24px 0;
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:stretch}
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
 .wrap{max-width:1360px;margin:0 auto;padding:24px}
 
 /* ===== Links ===== */
@@ -230,6 +236,26 @@ svg.lucide{width:1em;height:1em;stroke-width:2;flex-shrink:0}
 .panel.alert-on{border-color:var(--lc);box-shadow:inset 4px 0 0 var(--lc)}
 .alert-state{font-size:1.15rem;font-weight:700;color:var(--lc,var(--ink))}
 
+/* Quake */
+.qk{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:baseline;margin-top:10px;
+  padding-top:10px;border-top:1px solid var(--line);font-size:.82rem}
+.qk dt{color:var(--ink-3)}
+.qk dd{color:var(--ink)}
+.shindo{display:inline-block;min-width:2.6em;text-align:center;font-weight:700;padding:0 6px;border-radius:4px;
+  color:var(--lc,var(--ink-2));background:color-mix(in srgb,var(--lc,var(--ink-3)) 13%,transparent)}
+.nankai{margin-top:10px;padding:8px 10px;border-radius:var(--radius-s);font-size:.82rem;font-weight:700;
+  color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,transparent)}
+
+/* Trains */
+.trains{list-style:none;display:flex;flex-direction:column}
+.trains a{display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--line);font-size:.88rem}
+.trains li:last-child a{border-bottom:none}
+.trains a:hover .tr-name{color:var(--board);text-decoration:underline;text-underline-offset:3px}
+.tr-bar{width:4px;height:16px;border-radius:2px;background:var(--lc);flex-shrink:0}
+.tr-name{font-weight:700}
+.tr-st{font-size:.75rem;color:var(--ink-3);margin-left:8px}
+.trains svg{margin-left:auto;color:var(--ink-3);font-size:.85rem}
+
 /* Route */
 .dir{display:flex;align-items:center;gap:8px;font-size:.85rem;margin-bottom:8px}
 .dir-txt{flex:1}
@@ -318,6 +344,11 @@ footer a:hover{color:var(--board);text-decoration:underline}
       <div class="loading">読み込み中…</div>
       <a class="panel-more" href="https://www.jma.go.jp/bosai/warning/#area_type=class20s&area_code=1410011" target="_blank" rel="noopener">気象庁で詳しく見る<i data-lucide="external-link"></i></a>
     </section>
+    <section class="panel" id="wg-quake" aria-live="polite">
+      <div class="panel-h"><i data-lucide="activity"></i>地震情報（青葉区）<span class="upd"></span></div>
+      <div class="loading">読み込み中…</div>
+      <a class="panel-more" href="https://www.jma.go.jp/bosai/map.html#contents=earthquake_map" target="_blank" rel="noopener">気象庁で詳しく見る<i data-lucide="external-link"></i></a>
+    </section>
     <section class="panel" id="wg-weather">
       <div class="panel-h"><i data-lucide="cloud-sun"></i>天気（青葉区）<span class="upd"></span></div>
       <div class="loading">読み込み中…</div>
@@ -327,6 +358,11 @@ footer a:hover{color:var(--board);text-decoration:underline}
       <div class="panel-h"><i data-lucide="thermometer-sun"></i>暑さ指数 WBGT（推定）<span class="upd"></span></div>
       <div class="loading">読み込み中…</div>
       <a class="panel-more" href="https://www.wbgt.env.go.jp/graph_ref_td.php?region=03&prefecture=46&point=46106" target="_blank" rel="noopener">環境省で詳しく見る<i data-lucide="external-link"></i></a>
+    </section>
+    <section class="panel" id="wg-train">
+      <div class="panel-h"><i data-lucide="train-front"></i>電車の運行情報</div>
+      <ul class="trains" id="trains"></ul>
+      <a class="panel-more" href="https://transit.yahoo.co.jp/diainfo/area/4" target="_blank" rel="noopener">関東の運行情報一覧<i data-lucide="external-link"></i></a>
     </section>
     <section class="panel" id="wg-route">
       <div class="panel-h"><i data-lucide="map"></i>学校までのルート</div>
@@ -830,6 +866,86 @@ async function fetchWarnings() {
 }
 
 fetchWeather();
+// ========== EARTHQUAKE ==========
+// 気象庁の地震情報。青葉区（1411700）の震度を中心に、横浜市内（1410100〜1411800）の最大震度も見る
+const AOBA = '1411700';
+const SHINDO = ['1','2','3','4','5-','5+','6-','6+','7'];
+const shindoRank  = v => SHINDO.indexOf(v);             // 観測なしは -1
+const shindoLabel = v => v ? '震度' + v.replace('-', '弱').replace('+', '強') : '—';
+const shindoCls   = v => shindoRank(v) >= 4 ? 'c-stop' : shindoRank(v) >= 3 ? 'c-danger' : shindoRank(v) >= 2 ? 'c-caution' : '';
+const maxShindo   = list => list.reduce((m, v) => shindoRank(v) > shindoRank(m) ? v : m, null);
+
+async function fetchQuake() {
+  const panel = $('wg-quake');
+  try {
+    const list = await (await timedFetch('https://www.jma.go.jp/bosai/quake/data/list.json', 8000)).json();
+    const seen = new Set(), quakes = [];
+    for (const q of list) {                               // 新しい順。同じ地震は最新の報だけ使う
+      if (!['震源・震度情報', '震度速報'].includes(q.ttl) || q.ift !== '発表' || seen.has(q.eid)) continue;
+      seen.add(q.eid);
+      const kana = (q.int || []).find(p => p.code === '14');
+      if (!kana) continue;                                // 神奈川県で揺れを観測した地震だけ
+      const cities = kana.city || [];
+      quakes.push({
+        at: new Date(q.at), place: q.anm, mag: q.mag,
+        aoba: cities.find(c => c.code === AOBA)?.maxi || null,
+        yokohama: maxShindo(cities.filter(c => /^141[01]/.test(c.code)).map(c => c.maxi)),
+        kanagawa: kana.maxi,
+      });
+    }
+    const nankai = list.find(q => /南海トラフ地震臨時情報/.test(q.ttl) && Date.now() - new Date(q.at) < 7 * 864e5);
+
+    panel.classList.remove('alert-on', 'c-stop', 'c-danger');
+    const recent = quakes.filter(q => Date.now() - q.at < 864e5);
+    const worst = maxShindo(recent.map(q => q.aoba || q.yokohama).filter(Boolean));
+    let head;
+    if (shindoRank(worst) >= 4) {
+      panel.classList.add('alert-on', 'c-stop');
+      head = `<div class="alert-state">${shindoLabel(worst)}を観測</div><div class="sub">学校の地震対応（引き渡し基準など）を確認してください</div>`;
+    } else if (shindoRank(worst) >= 3) {
+      panel.classList.add('alert-on', 'c-danger');
+      head = `<div class="alert-state">${shindoLabel(worst)}を観測</div><div class="sub">施設や通学路の状況を確認してください</div>`;
+    } else if (worst) {
+      head = `<div class="alert-state">24時間以内に${shindoLabel(worst)}</div><div class="sub">大きな揺れは観測されていません</div>`;
+    } else {
+      head = `<div class="alert-state c-safe">揺れの観測なし</div><div class="sub">24時間以内に青葉区・横浜市で観測された地震はありません</div>`;
+    }
+
+    const last = quakes[0];
+    const when = d => `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const detail = last ? `
+      <dl class="qk num">
+        <dt>直近の地震</dt><dd>${when(last.at)}　${esc(last.place || '震源調査中')}${last.mag && !isNaN(last.mag) ? `　M${esc(last.mag)}` : ''}</dd>
+        <dt>青葉区</dt><dd><span class="shindo ${shindoCls(last.aoba)}">${shindoLabel(last.aoba)}</span></dd>
+        <dt>横浜市内最大</dt><dd><span class="shindo ${shindoCls(last.yokohama)}">${shindoLabel(last.yokohama)}</span></dd>
+      </dl>` : '';
+    const nankaiHtml = nankai ? `<div class="nankai">${esc(nankai.ttl)}が発表されています</div>` : '';
+    setBody('wg-quake', head + nankaiHtml + detail);
+    stamp('wg-quake');
+  } catch {
+    setBody('wg-quake', '<div class="err">地震情報を取得できませんでした。気象庁のサイトで確認してください。</div>');
+  }
+  drawIcons();
+}
+
+// ========== TRAINS ==========
+// 運行状況は鉄道会社のデータをブラウザから直接読めないため、路線ごとの Yahoo!路線情報ページを開く
+const LINES = [
+  {name:'東急田園都市線',     near:'江田・市が尾',   color:'#20A288', id:114},
+  {name:'ブルーライン',       near:'あざみ野',       color:'#1B6AB5', id:140},
+  {name:'グリーンライン',     near:'センター北',     color:'#00A33C', id:539},
+  {name:'JR横浜線',           near:'長津田・中山',   color:'#80C241', id:31},
+  {name:'JR南武線',           near:'武蔵溝ノ口',     color:'#FFD400', id:34},
+];
+$('trains').innerHTML = LINES.map(l => `
+  <li><a href="https://transit.yahoo.co.jp/diainfo/${l.id}/0" target="_blank" rel="noopener">
+    <span class="tr-bar" style="--lc:${l.color}"></span>
+    <span><span class="tr-name">${esc(l.name)}</span><span class="tr-st">${esc(l.near)}</span></span>
+    <i data-lucide="external-link"></i>
+  </a></li>`).join('');
+
+fetchQuake();
+setInterval(fetchQuake, 5 * 60 * 1000);
 fetchWarnings();
 setInterval(fetchWeather,  30 * 60 * 1000);
 setInterval(fetchWarnings, 10 * 60 * 1000);
@@ -858,6 +974,11 @@ $('routeBtn').addEventListener('click', openRoute);
 $('place').addEventListener('keydown', e => { if (e.key === 'Enter') openRoute(); });
 
 drawIcons();
+
+// ========== PWA（ホーム画面に追加） ==========
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 </script>
 </body>
 </html>

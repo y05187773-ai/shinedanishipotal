@@ -1,0 +1,16 @@
+{
+  "name": "新荏田西ポータル",
+  "short_name": "荏田西ポータル",
+  "description": "横浜市立荏田西小学校 教職員向けリンク集・時程・気象情報",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F6F5",
+  "theme_color": "#2E6A57",
+  "icons": [
+    { "src": "app-icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "app-icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "app-icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
