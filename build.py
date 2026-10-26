@@ -7,14 +7,17 @@ Excel列構成（1行目はヘッダー）:
   B列: サービス名
   C列: URL
   D列: 説明（省略可）
-  E列: アイコン画像（セルに画像を挿入 → 自動抽出して icons/ に保存）
+  E列: アイコン画像（セルに画像を挿入 → 自動抽出して icons/<ドメイン>.png に保存）
+
+アイコンは URL のドメインで決まる（例: https://loilonote.app/... → icons/loilonote.app.png）。
+行の追加・並べ替えをしてもアイコンはずれない。同じドメインの画像がすでにあればそれを使う。
 
 使い方:
   python3 build.py [Excelファイルパス]
   例: python3 build.py data.xlsx
 """
 
-import sys, os, re, zipfile, shutil, json
+import sys, os, re, zipfile, shutil, json, tempfile
 from pathlib import Path
 from html import escape
 
@@ -31,6 +34,7 @@ import xml.etree.ElementTree as ET
 EXCEL_PATH    = sys.argv[1] if len(sys.argv) > 1 else "data.xlsx"
 INDEX_HTML    = Path(__file__).parent / "index.html"
 ICONS_DIR     = Path(__file__).parent / "icons"
+EMBED_DIR     = Path(tempfile.mkdtemp())   # Excel から取り出した画像の一時置き場（行番号で管理）
 DATA_START_ROW = 2
 
 # カテゴリ名 → Lucide アイコン名・カラークラス
@@ -81,7 +85,7 @@ def _resolve_sheet_xml(z, sheet_name: str) -> str:
 
 def extract_embedded_images(xlsx_path: str, sheet_name: str = "リンク一覧") -> dict:
     row_to_image = {}
-    ICONS_DIR.mkdir(exist_ok=True)
+    EMBED_DIR.mkdir(exist_ok=True)
     try:
         with zipfile.ZipFile(xlsx_path, "r") as z:
             names = z.namelist()
@@ -180,10 +184,10 @@ def _extract_rich_value_images(z, names, sheet_xml_path="xl/worksheets/sheet1.xm
             continue
         suffix = Path(media_path).suffix.lower() or ".png"
         dest_name = f"row{row_num}{suffix}"
-        dest_path = ICONS_DIR / dest_name
+        dest_path = EMBED_DIR / dest_name
         with z.open(media_path) as src, open(dest_path, "wb") as dst:
             shutil.copyfileobj(src, dst)
-        row_to_image[row_num] = f"icons/{dest_name}"
+        row_to_image[row_num] = dest_path
         print(f"  ✓ 画像抽出 (Excel 365): 行{row_num} → {dest_name}")
     return row_to_image
 
@@ -231,12 +235,30 @@ def _extract_drawing_images(z, names):
                 continue
             suffix = Path(media_path).suffix.lower() or ".png"
             dest_name = f"row{excel_row}{suffix}"
-            dest_path = ICONS_DIR / dest_name
+            dest_path = EMBED_DIR / dest_name
             with z.open(media_path) as src, open(dest_path, "wb") as dst:
                 shutil.copyfileobj(src, dst)
-            row_to_image[excel_row] = f"icons/{dest_name}"
+            row_to_image[excel_row] = dest_path
             print(f"  ✓ 画像抽出 (floating): 行{excel_row} → {dest_name}")
     return row_to_image
+
+
+# ────────── アイコン画像を決める ──────────
+def resolve_icon(domain: str, row_idx: int, embedded: dict):
+    """icons/<ドメイン>.png があればそれを使う。なければ Excel の埋め込み画像を保存して使う。"""
+    if not domain:
+        return None
+    for ext in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico"):
+        if (ICONS_DIR / f"{domain}{ext}").exists():
+            return f"icons/{domain}{ext}"
+    src = embedded.get(row_idx)
+    if src:
+        ICONS_DIR.mkdir(exist_ok=True)
+        dest = ICONS_DIR / f"{domain}{Path(src).suffix.lower() or '.png'}"
+        shutil.copyfile(src, dest)
+        print(f"  ✓ アイコン追加: 行{row_idx} → {dest.name}")
+        return f"icons/{dest.name}"
+    return None
 
 
 # ────────── JS の CATS 配列を生成 ──────────
@@ -266,7 +288,7 @@ def generate_cats_js(categories_meta, category_rows, image_map):
             domain = extract_domain(url)
 
             # アイコン画像
-            img_path = image_map.get(row_idx)
+            img_path = resolve_icon(domain, row_idx, image_map)
             img_val  = f"'{img_path}'" if img_path else "null"
 
             name_esc   = name.replace("'", "\\'")
@@ -316,24 +338,12 @@ def main():
     print(f"📄 読み込み: {EXCEL_PATH}")
     DATA_SHEET = "リンク一覧"
 
-    # ① icons/ に既存の PNG を先に収集（手動取得ファビコンを優先）
-    favicon_map = {}
-    if ICONS_DIR.exists():
-        for f in ICONS_DIR.iterdir():
-            m = re.match(r"row(\d+)\.png$", f.name)
-            if m:
-                favicon_map[int(m.group(1))] = f"icons/{f.name}"
-    if favicon_map:
-        print(f"  既存ファビコン PNG: {len(favicon_map)} 件")
-
-    # ② Excel 埋め込み画像を抽出（favicon がない行のみ保存）
+    # Excel 埋め込み画像を抽出（icons/ に同じドメインの画像がない行だけ使う）
     print("🖼  Excel 埋め込み画像を確認中...")
     image_map = extract_embedded_images(EXCEL_PATH, DATA_SHEET)
     if not image_map:
         print("  (埋め込み画像なし)")
 
-    # ③ favicon PNG が優先（上書きマージ）
-    image_map.update(favicon_map)
 
     wb = load_workbook(EXCEL_PATH, data_only=True)
     if DATA_SHEET in wb.sheetnames:
