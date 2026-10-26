@@ -1,0 +1,54 @@
+# data.xlsx などをアップロードすると、build.py でリンク一覧を作り直してサイトを公開する
+name: サイトを更新
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # Actions 画面から手動でも実行できる
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Excel からリンク一覧を作成
+        run: |
+          pip install openpyxl
+          python build.py data.xlsx
+
+      # 公開するファイルだけを集める（data.xlsx や build.py はサイトに載せない）
+      - name: 公開用ファイルをまとめる
+        run: |
+          mkdir _site
+          cp -r index.html manifest.webmanifest sw.js \
+                favicon.ico favicon-32.png favicon-180.png \
+                icons app-icons _site/
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
