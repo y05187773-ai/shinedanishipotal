@@ -243,18 +243,31 @@ def _extract_drawing_images(z, names):
     return row_to_image
 
 
+# ────────── アイコンの名前（ドメイン。github.io はリポジトリごと） ──────────
+def icon_key(url: str, domain: str) -> str:
+    """github.io は1つのドメインに複数のサイトがあるので、
+    icons/<ドメイン>_<リポジトリ名>.png を優先する（例: y05187773-ai.github.io_syokencreater.png）。"""
+    if domain.endswith(".github.io"):
+        m = re.match(r"https?://[^/]+/([^/?#]+)", url or "")
+        if m:
+            return f"{domain}_{m.group(1)}"
+    return domain
+
+
 # ────────── アイコン画像を決める ──────────
-def resolve_icon(domain: str, row_idx: int, embedded: dict):
-    """icons/<ドメイン>.png があればそれを使う。なければ Excel の埋め込み画像を保存して使う。"""
+def resolve_icon(domain: str, row_idx: int, embedded: dict, key: str = None):
+    """icons/<名前>.png → icons/<ドメイン>.png の順に探す。なければ Excel の埋め込み画像を保存して使う。"""
     if not domain:
         return None
-    for ext in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico"):
-        if (ICONS_DIR / f"{domain}{ext}").exists():
-            return f"icons/{domain}{ext}"
+    key = key or domain
+    for name in dict.fromkeys([key, domain]):
+        for ext in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico"):
+            if (ICONS_DIR / f"{name}{ext}").exists():
+                return f"icons/{name}{ext}"
     src = embedded.get(row_idx)
     if src:
         ICONS_DIR.mkdir(exist_ok=True)
-        dest = ICONS_DIR / f"{domain}{Path(src).suffix.lower() or '.png'}"
+        dest = ICONS_DIR / f"{key}{Path(src).suffix.lower() or '.png'}"
         shutil.copyfile(src, dest)
         print(f"  ✓ アイコン追加: 行{row_idx} → {dest.name}")
         return f"icons/{dest.name}"
@@ -288,7 +301,7 @@ def generate_cats_js(categories_meta, category_rows, image_map):
             domain = extract_domain(url)
 
             # アイコン画像
-            img_path = resolve_icon(domain, row_idx, image_map)
+            img_path = resolve_icon(domain, row_idx, image_map, icon_key(url, domain))
             img_val  = f"'{img_path}'" if img_path else "null"
 
             name_esc   = name.replace("'", "\\'")
